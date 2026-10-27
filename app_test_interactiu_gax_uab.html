@@ -1,0 +1,3207 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plataforma d'Avaluació GAX - UAB (120 Preguntes)</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              800: '#3730a3',
+              900: '#312e81',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    code, pre {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(156, 163, 175, 0.4);
+      border-radius: 9999px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: rgba(156, 163, 175, 0.6);
+    }
+    pre.code-block {
+      background-color: #0f172a;
+      color: #38bdf8;
+      border-radius: 0.5rem;
+      padding: 0.75rem 1rem;
+      overflow-x: auto;
+      font-size: 0.875rem;
+      border: 1px solid rgba(255,255,255,0.08);
+      margin: 0.5rem 0;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen flex flex-col font-sans transition-colors duration-200">
+
+  <!-- CAPÇALERA SUPERIOR -->
+  <header class="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur border-b border-slate-200 dark:border-slate-800 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="goToConfig()">
+        <div class="bg-brand-600 text-white p-2 rounded-xl shadow-md shadow-brand-500/20">
+          <i data-lucide="terminal" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <span class="text-xs uppercase tracking-wider font-semibold text-brand-600 dark:text-brand-400">UAB · Enginyeria Informàtica</span>
+          <h1 class="text-lg font-bold leading-tight">GAX Prep <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-100 dark:bg-brand-900/60 text-brand-700 dark:text-brand-300 ml-1">120 Preguntes</span></h1>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-2 sm:space-x-3">
+        <!-- Cronòmetre -->
+        <div id="timerContainer" class="hidden items-center space-x-2 px-3 py-1.5 rounded-lg bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-900/50 font-mono text-sm">
+          <i data-lucide="clock" class="w-4 h-4"></i>
+          <span id="timerDisplay">00:00</span>
+        </div>
+
+        <!-- Botó Catàleg Complet -->
+        <button onclick="openCatalogView()" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+          <i data-lucide="book-open" class="w-4 h-4 text-brand-600 dark:text-brand-400"></i>
+          <span class="hidden sm:inline">Catàleg (120)</span>
+        </button>
+
+        <!-- Botó Mode Fosc/Clar -->
+        <button id="themeToggleBtn" onclick="toggleTheme()" class="p-2 rounded-lg text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" title="Canviar tema">
+          <i id="themeIcon" data-lucide="moon" class="w-5 h-5"></i>
+        </button>
+
+        <!-- Botó Ajustos -->
+        <button id="headerConfigBtn" onclick="openSettingsModal()" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer" title="Ajustos de la plataforma">
+          <i data-lucide="settings-2" class="w-4 h-4"></i>
+          <span class="hidden sm:inline">Ajustos</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTINGUT PRINCIPAL -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+
+    <!-- VISTA 1: CONFIGURACIÓ INICIAL DEL TEST -->
+    <div id="viewConfig" class="max-w-3xl mx-auto space-y-8 animate-fadeIn">
+      <div class="text-center space-y-3">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 dark:bg-brand-950/60 border border-brand-200 dark:border-brand-800 text-brand-700 dark:text-brand-300 text-xs font-semibold">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Ampliat: Exàmens Oficials + Tot el Temari (120 preguntes)
+        </div>
+        <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+          Simulador d'Examen GAX
+        </h2>
+        <p class="text-slate-600 dark:text-slate-400 max-w-xl mx-auto text-sm sm:text-base">
+          Inclou totes les preguntes reals d'exàmens anteriors del professor Remo Suppi i preguntes noves d'alta precisió cobrint el 100% dels 4 documents d'apunts (30 preguntes per bloc).
+        </p>
+      </div>
+
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm space-y-6">
+        <!-- 1. Tria de Temes / Blocs -->
+        <div>
+          <label class="block text-sm font-semibold text-slate-900 dark:text-slate-200 mb-3 flex items-center justify-between">
+            <span class="flex items-center gap-2"><i data-lucide="layers" class="w-4 h-4 text-brand-600"></i> 1. Selecciona els Blocs Temàtics</span>
+            <span class="text-xs font-normal text-slate-500">30 preguntes per bloc (120 totals)</span>
+          </label>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="blockSelectors">
+            <label class="relative flex items-start p-3.5 rounded-xl border border-slate-200 dark:border-slate-700/80 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-all">
+              <input type="checkbox" id="block1" checked class="mt-1 rounded text-brand-600 focus:ring-brand-500">
+              <div class="ml-3">
+                <div class="flex items-center gap-2">
+                  <span class="text-sm font-semibold">Bloc 1: Tema 1A</span>
+                  <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-mono">30 preg.</span>
+                </div>
+                <span class="block text-xs text-slate-500 dark:text-slate-400 mt-0.5">GNU/Linux, Systemd, Kernel, udev, FS, Netplan, WiFi i Logs</span>
+              </div>
+            </label>
+            <label class="relative flex items-start p-3.5 rounded-xl border border-slate-200 dark:border-slate-700/80 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-all">
+              <input type="checkbox" id="block2" checked class="mt-1 rounded text-brand-600 focus:ring-brand-500">
+              <div class="ml-3">
+                <div class="flex items-center gap-2">
+                  <span class="text-sm font-semibold">Bloc 2: Temes 1B & 1C</span>
+                  <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-mono">30 preg.</span>
+                </div>
+                <span class="block text-xs text-slate-500 dark:text-slate-400 mt-0.5">Routing, NAT/DNAT, DNS, DHCP, SSH, Xinetd, NFS, SAN/NAS, Samba i CDN</span>
+              </div>
+            </label>
+            <label class="relative flex items-start p-3.5 rounded-xl border border-slate-200 dark:border-slate-700/80 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-all">
+              <input type="checkbox" id="block3" checked class="mt-1 rounded text-brand-600 focus:ring-brand-500">
+              <div class="ml-3">
+                <div class="flex items-center gap-2">
+                  <span class="text-sm font-semibold">Bloc 3: Tema 1D</span>
+                  <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-mono">30 preg.</span>
+                </div>
+                <span class="block text-xs text-slate-500 dark:text-slate-400 mt-0.5">Hipervisors, VT-x/AMD-V, cgroups, Docker, Xarxes, Compose, Swarm i LXD</span>
+              </div>
+            </label>
+            <label class="relative flex items-start p-3.5 rounded-xl border border-slate-200 dark:border-slate-700/80 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-all">
+              <input type="checkbox" id="block4" checked class="mt-1 rounded text-brand-600 focus:ring-brand-500">
+              <div class="ml-3">
+                <div class="flex items-center gap-2">
+                  <span class="text-sm font-semibold">Bloc 4: Proxies</span>
+                  <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-mono">30 preg.</span>
+                </div>
+                <span class="block text-xs text-slate-500 dark:text-slate-400 mt-0.5">Forward/Reverse/Open, SOCKS5, Apache2 (Balancer, PAM, SSL, DAV) i Squid</span>
+              </div>
+            </label>
+          </div>
+          <div class="mt-2 flex gap-2">
+            <button type="button" onclick="toggleAllBlocks(true)" class="text-xs text-brand-600 dark:text-brand-400 hover:underline font-medium">Seleccionar tots</button>
+            <span class="text-xs text-slate-400">·</span>
+            <button type="button" onclick="toggleAllBlocks(false)" class="text-xs text-brand-600 dark:text-brand-400 hover:underline font-medium">Deseleccionar tots</button>
+          </div>
+        </div>
+
+        <div class="border-t border-slate-200 dark:border-slate-800"></div>
+
+        <!-- 2. Filtre d'origen i Quantitat de preguntes -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-semibold text-slate-900 dark:text-slate-200 mb-2 flex items-center gap-2">
+              <i data-lucide="filter" class="w-4 h-4 text-brand-600"></i> 2. Tipus de Preguntes
+            </label>
+            <select id="questionFilterType" onchange="updateSelectedBlocksCount()" class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-brand-500 outline-none">
+              <option value="all">Totes (Exàmens Reals + Temari Complet)</option>
+              <option value="examOnly">Només preguntes d'Exàmens Oficials anteriors</option>
+              <option value="newOnly">Només preguntes noves d'ampliació del temari</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-slate-900 dark:text-slate-200 mb-2 flex items-center gap-2">
+              <i data-lucide="hash" class="w-4 h-4 text-brand-600"></i> 3. Nombre de Preguntes
+            </label>
+            <select id="questionLimitSelect" onchange="updateSelectedBlocksCount()" class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-brand-500 outline-none">
+              <option value="all">Totes les disponibles de la selecció</option>
+              <option value="20">20 preguntes (Test ràpid)</option>
+              <option value="30">30 preguntes (1 bloc estàndard)</option>
+              <option value="60">60 preguntes (Simulacre mitjà)</option>
+              <option value="100">100 preguntes (Simulacre llarg)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="border-t border-slate-200 dark:border-slate-800"></div>
+
+        <!-- 3. Mode de Correcció -->
+        <div>
+          <label class="block text-sm font-semibold text-slate-900 dark:text-slate-200 mb-3 flex items-center gap-2">
+            <i data-lucide="help-circle" class="w-4 h-4 text-brand-600"></i> 4. Mode d'Execució
+          </label>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <label class="relative flex p-4 rounded-xl border-2 border-brand-500 bg-brand-50/40 dark:bg-brand-950/20 cursor-pointer transition-all" id="modeCardPractice">
+              <input type="radio" name="examMode" value="practice" checked class="sr-only" onchange="updateModeUI()">
+              <div>
+                <div class="flex items-center gap-2 font-semibold text-sm text-brand-900 dark:text-brand-300">
+                  <i data-lucide="zap" class="w-4 h-4"></i> Mode Estudi (Feedback Immediat)
+                </div>
+                <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">
+                  En marcar una opció veus a l'instant si has encertat o fallat amb la justificació tècnica completa.
+                </p>
+              </div>
+            </label>
+            <label class="relative flex p-4 rounded-xl border border-slate-200 dark:border-slate-700/80 cursor-pointer transition-all" id="modeCardExam">
+              <input type="radio" name="examMode" value="exam" class="sr-only" onchange="updateModeUI()">
+              <div>
+                <div class="flex items-center gap-2 font-semibold text-sm text-slate-900 dark:text-slate-200">
+                  <i data-lucide="award" class="w-4 h-4"></i> Simulacre d'Examen
+                </div>
+                <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">
+                  Amb cronòmetre. Tries la resposta i es confirma en passar a la següent pregunta, bloquejant-se per a revisió posterior.
+                </p>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- 4. Opcions Addicionals -->
+        <div class="space-y-3">
+          <div class="flex flex-col sm:flex-row gap-4">
+            <label class="flex items-center gap-2.5 text-sm cursor-pointer select-none">
+              <input type="checkbox" id="optShuffle" checked class="rounded text-brand-600 focus:ring-brand-500">
+              <span>Barrejar preguntes i opcions aleatòriament</span>
+            </label>
+            <label class="flex items-center gap-2.5 text-sm cursor-pointer select-none">
+              <input type="checkbox" id="optPenalize" class="rounded text-brand-600 focus:ring-brand-500">
+              <span>Aplicar penalització d'examen (-0,20 per error)</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3 pt-2">
+          <button onclick="startQuiz()" class="flex-1 py-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-base shadow-lg shadow-brand-600/30 hover:shadow-brand-600/40 transition-all flex items-center justify-center gap-2">
+            <i data-lucide="play" class="w-5 h-5"></i>
+            <span id="startBtnText">Començar Test (120 Preguntes)</span>
+          </button>
+          <button onclick="openCatalogView()" class="sm:w-auto px-5 py-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 font-semibold text-sm text-slate-700 dark:text-slate-200 transition-all flex items-center justify-center gap-2">
+            <i data-lucide="list" class="w-4 h-4"></i>
+            <span>Llegir totes les preguntes</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VISTA 2: QUIZ / TEST EN CURS -->
+    <div id="viewQuiz" class="hidden grid grid-cols-1 lg:grid-cols-4 gap-6">
+      
+      <!-- COLUMNA PRINCIPAL: PREGUNTA I OPCIONS (3/4) -->
+      <div class="lg:col-span-3 space-y-4">
+        
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm relative">
+          
+          <!-- Metadades de la pregunta -->
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-4 pb-3 border-b border-slate-100 dark:border-slate-800 text-xs">
+            <div class="flex flex-wrap items-center gap-2">
+              <span id="qBadgeBlock" class="px-2.5 py-1 rounded-md bg-brand-50 dark:bg-brand-950/60 text-brand-700 dark:text-brand-300 font-semibold border border-brand-200/60 dark:border-brand-900/50">
+                Bloc 1: Tema 1A
+              </span>
+              <span id="qBadgeSource" class="px-2.5 py-1 rounded-md font-semibold">
+                Examen Oficial
+              </span>
+              <span id="qIndexText" class="font-mono text-slate-500 dark:text-slate-400">
+                Pregunta 1 de 120
+              </span>
+              <span id="qLockedBadge" class="hidden items-center gap-1 px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold border border-slate-200 dark:border-slate-700 text-xs">
+                <i data-lucide="lock" class="w-3.5 h-3.5 text-slate-500"></i> Resposta confirmada
+              </span>
+            </div>
+
+            <!-- Botó per marcar per a revisar -->
+            <button id="flagBtn" onclick="toggleFlagCurrentQuestion()" class="flex items-center gap-1.5 px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+              <i data-lucide="bookmark" id="flagIcon" class="w-4 h-4"></i>
+              <span id="flagText">Marcar per revisar</span>
+            </button>
+          </div>
+
+          <!-- Títol curt de la pregunta -->
+          <div id="qTitle" class="text-xs uppercase tracking-wider font-bold text-slate-400 dark:text-slate-500 mb-1"></div>
+
+          <!-- Text de l'Enunciat -->
+          <div id="qText" class="text-base sm:text-lg font-semibold text-slate-900 dark:text-white leading-relaxed mb-6">
+            Carregant pregunta...
+          </div>
+
+          <!-- Opcions de Resposta -->
+          <div id="qOptionsList" class="space-y-3"></div>
+
+          <!-- Caixa d'Explicació / Feedback Immediat -->
+          <div id="feedbackBox" class="hidden mt-6 p-4 rounded-xl border transition-all animate-fadeIn">
+            <div class="flex items-start gap-3">
+              <div id="feedbackIcon" class="mt-0.5"></div>
+              <div class="flex-1">
+                <div id="feedbackTitle" class="text-sm font-bold"></div>
+                <div id="feedbackBody" class="text-xs sm:text-sm mt-1 text-slate-700 dark:text-slate-300 leading-relaxed font-sans"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Barra de Navegació Inferior -->
+          <div class="flex items-center justify-between mt-8 pt-4 border-t border-slate-100 dark:border-slate-800">
+            <button id="prevBtn" onclick="prevQuestion()" class="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium text-sm flex items-center gap-1.5 transition-colors">
+              <i data-lucide="chevron-left" class="w-4 h-4"></i> Anterior
+            </button>
+
+            <div class="flex items-center gap-2">
+              <button id="confirmBtn" onclick="confirmCurrentQuestion()" class="hidden px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs sm:text-sm flex items-center gap-1.5 shadow-sm transition-colors">
+                <i data-lucide="check" class="w-4 h-4"></i> Confirmar resposta
+              </button>
+              <button onclick="confirmFinishExam()" class="px-4 py-2 rounded-xl border border-emerald-300 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 font-semibold text-xs sm:text-sm transition-colors">
+                Avaluar ara
+              </button>
+              <button id="nextBtn" onclick="nextQuestion()" class="px-5 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm flex items-center gap-1.5 shadow-sm transition-colors">
+                Següent <i data-lucide="chevron-right" class="w-4 h-4"></i>
+              </button>
+              <button id="finishBtn" onclick="confirmFinishExam()" class="hidden px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm flex items-center gap-1.5 shadow-sm transition-colors">
+                <i data-lucide="check-circle-2" class="w-4 h-4"></i> Finalitzar Test
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- COLUMNA LATERAL: NAVEGADOR DE PREGUNTES I ESTATS (1/4) -->
+      <div class="lg:col-span-1 space-y-4">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">Progrés de la Sessió</h3>
+          
+          <div class="space-y-2">
+            <div class="flex justify-between text-xs font-medium">
+              <span>Completades</span>
+              <span id="statProgressPercent">0%</span>
+            </div>
+            <div class="w-full bg-slate-100 dark:bg-slate-800 h-2.5 rounded-full overflow-hidden">
+              <div id="progressBar" class="bg-brand-600 h-full w-0 transition-all duration-300"></div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 text-center pt-2">
+            <div class="bg-slate-50 dark:bg-slate-800/60 p-2 rounded-lg border border-slate-100 dark:border-slate-800">
+              <div class="text-xs text-slate-500">Fetes</div>
+              <div id="statAnsweredCount" class="text-base font-bold">0/120</div>
+            </div>
+            <div class="bg-emerald-50 dark:bg-emerald-950/30 p-2 rounded-lg border border-emerald-100 dark:border-emerald-900/30 text-emerald-700 dark:text-emerald-400">
+              <div class="text-xs">Encerts</div>
+              <div id="statCorrectCount" class="text-base font-bold">0</div>
+            </div>
+            <div class="bg-rose-50 dark:bg-rose-950/30 p-2 rounded-lg border border-rose-100 dark:border-rose-900/30 text-rose-700 dark:text-rose-400">
+              <div class="text-xs">Errors</div>
+              <div id="statWrongCount" class="text-base font-bold">0</div>
+            </div>
+          </div>
+
+          <!-- Filtres de Reixa -->
+          <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs font-semibold text-slate-700 dark:text-slate-300">Mapa de preguntes</span>
+              <select id="gridFilterSelect" onchange="renderGridNavigation()" class="text-xs bg-slate-100 dark:bg-slate-800 border-none rounded-md px-2 py-1 text-slate-700 dark:text-slate-300 focus:ring-brand-500">
+                <option value="all">Totes</option>
+                <option value="flagged">Marcades (📌)</option>
+                <option value="unanswered">Sense respondre</option>
+                <option value="wrong">Només fallades</option>
+              </select>
+            </div>
+
+            <div id="questionGrid" class="grid grid-cols-5 sm:grid-cols-6 lg:grid-cols-5 gap-1.5 max-h-72 overflow-y-auto custom-scrollbar p-1"></div>
+          </div>
+
+          <button onclick="goToConfig()" class="w-full py-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-400 transition-colors flex items-center justify-center gap-1.5">
+            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Reiniciar / Canviar Filtres
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VISTA 3: PANTALLA DE RESULTATS I DESGLOSSAMENT -->
+    <div id="viewResults" class="hidden max-w-4xl mx-auto space-y-8 animate-fadeIn">
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-10 shadow-sm text-center relative overflow-hidden">
+        <div id="scoreBadge" class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-bold mb-4 bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300">
+          <i data-lucide="award" class="w-4 h-4"></i> Sessió Finalitzada!
+        </div>
+
+        <h2 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white" id="finalScoreTitle">
+          0.00 <span class="text-2xl font-medium text-slate-400">/ 10</span>
+        </h2>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-2" id="finalScoreSubtitle"></p>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8">
+          <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-800">
+            <div class="text-xs text-slate-500">Encerts</div>
+            <div id="resTotalCorrect" class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">0</div>
+          </div>
+          <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-800">
+            <div class="text-xs">Errors</div>
+            <div id="resTotalWrong" class="text-2xl font-bold text-rose-600 dark:text-rose-400">0</div>
+          </div>
+          <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-800">
+            <div class="text-xs">En Blanc</div>
+            <div id="resTotalUnanswered" class="text-2xl font-bold text-slate-600 dark:text-slate-300">0</div>
+          </div>
+          <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-800">
+            <div class="text-xs">Temps emprat</div>
+            <div id="resTotalTime" class="text-2xl font-bold text-brand-600 dark:text-brand-400">--:--</div>
+          </div>
+        </div>
+
+        <div class="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 text-left">
+          <h3 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-4 flex items-center gap-2">
+            <i data-lucide="bar-chart-2" class="w-4 h-4 text-brand-600"></i> Rendiment per Bloc Temàtic
+          </h3>
+          <div class="space-y-4" id="resultsBlockBreakdown"></div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3 mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 justify-center">
+          <button onclick="retryOnlyWrongQuestions()" id="retryWrongBtn" class="px-6 py-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-sm shadow-md transition-colors flex items-center justify-center gap-2">
+            <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Repetir només les fallades (<span id="wrongCountBadge">0</span>)
+          </button>
+          <button onclick="goToConfig()" class="px-6 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm shadow-md transition-colors flex items-center justify-center gap-2">
+            <i data-lucide="sliders" class="w-4 h-4"></i> Configurar Nou Test
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VISTA 4: MODE CATÀLEG / LLISTAT COMPLET DE LES 120 PREGUNTES -->
+    <div id="viewCatalog" class="hidden space-y-6 animate-fadeIn">
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <i data-lucide="book-open" class="w-6 h-6 text-brand-600"></i> Catàleg Complet de les 120 Preguntes
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+              Explora, filtra i cerca qualsevol concepte, comanda o pregunta d'examen amb la seva resposta i justificació.
+            </p>
+          </div>
+          <button onclick="goToConfig()" class="self-start sm:self-auto px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold flex items-center gap-1.5">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i> Tornar al Simulador
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+          <input type="text" id="catalogSearch" oninput="renderCatalogList()" placeholder="Cerca per paraula clau (ex. iptables, squid, fstab, lxd...)" class="sm:col-span-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-500">
+          <select id="catalogBlockFilter" onchange="renderCatalogList()" class="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3.5 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-500">
+            <option value="all">Tots els blocs (120)</option>
+            <option value="exam">Només Exàmens Oficials</option>
+            <option value="1">Bloc 1: Tema 1A (30)</option>
+            <option value="2">Bloc 2: Temes 1B i 1C (30)</option>
+            <option value="3">Bloc 3: Tema 1D Virtualització (30)</option>
+            <option value="4">Bloc 4: Proxies (30)</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="catalogContainer" class="space-y-4"></div>
+    </div>
+
+  </main>
+  <!-- MODAL D'AJUSTOS -->
+  <div id="settingsModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-fadeIn">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      
+      <!-- Capçalera del Modal -->
+      <div class="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="p-2 rounded-xl bg-brand-50 dark:bg-brand-950 text-brand-600 dark:text-brand-400 border border-brand-200 dark:border-brand-900">
+            <i data-lucide="settings-2" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-base text-slate-900 dark:text-white">Ajustos de la Plataforma</h3>
+            <p class="text-xs text-slate-500">Personalitza l'experiència d'estudi i examen</p>
+          </div>
+        </div>
+        <button onclick="closeSettingsModal()" class="p-2 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" title="Tancar">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Contingut amb scroll si cal -->
+      <div class="p-6 space-y-6 overflow-y-auto custom-scrollbar flex-1 text-sm">
+        
+        <!-- Preferència: Tema -->
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+              <i data-lucide="palette" class="w-4 h-4 text-brand-600"></i> Tema Visual
+            </div>
+            <div class="text-xs text-slate-500 mt-0.5">Alterna entre mode fosc i mode clar</div>
+          </div>
+          <button onclick="toggleTheme()" class="px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium text-xs flex items-center gap-1.5 transition-colors">
+            <i data-lucide="sun-moon" class="w-4 h-4 text-amber-500"></i>
+            <span id="settingsThemeText">Canviar tema</span>
+          </button>
+        </div>
+
+        <div class="border-t border-slate-100 dark:border-slate-800"></div>
+
+        <!-- Preferència: Mida del text -->
+        <div>
+          <div class="font-semibold text-slate-900 dark:text-slate-100 mb-1 flex items-center gap-2">
+            <i data-lucide="type" class="w-4 h-4 text-brand-600"></i> Mida del text de les preguntes
+          </div>
+          <p class="text-xs text-slate-500 mb-2.5">Ajusta la mida de lletra per a una lectura més còmoda</p>
+          <div class="grid grid-cols-3 gap-2">
+            <button onclick="setFontSize('normal')" id="fontBtnNormal" class="py-2 px-3 rounded-xl border text-xs font-semibold text-center transition-all border-brand-600 bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300">
+              Normal (16px)
+            </button>
+            <button onclick="setFontSize('large')" id="fontBtnLarge" class="py-2 px-3 rounded-xl border text-xs font-semibold text-center transition-all border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">
+              Gran (18px)
+            </button>
+            <button onclick="setFontSize('xlarge')" id="fontBtnXLarge" class="py-2 px-3 rounded-xl border text-xs font-semibold text-center transition-all border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">
+              Molt Gran (20px)
+            </button>
+          </div>
+        </div>
+
+        <div class="border-t border-slate-100 dark:border-slate-800"></div>
+
+        <!-- Preferències d'Examen -->
+        <div class="space-y-4">
+          <div class="font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+            <i data-lucide="sliders" class="w-4 h-4 text-brand-600"></i> Opcions d'Avaluació
+          </div>
+
+          <label class="flex items-center justify-between p-3 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/40 cursor-pointer">
+            <div>
+              <span class="block font-medium text-xs text-slate-900 dark:text-slate-200">Penalització per error (-0,20)</span>
+              <span class="block text-[11px] text-slate-500">Resta 0,20 punts de la nota per cada resposta incorrecta</span>
+            </div>
+            <input type="checkbox" id="settingsOptPenalize" onchange="syncSettingsCheckboxes('penalize')" class="w-4 h-4 rounded text-brand-600 focus:ring-brand-500">
+          </label>
+
+          <label class="flex items-center justify-between p-3 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/40 cursor-pointer">
+            <div>
+              <span class="block font-medium text-xs text-slate-900 dark:text-slate-200">Barrejar preguntes i opcions</span>
+              <span class="block text-[11px] text-slate-500">Ordre aleatori per al proper test que s'iniciï</span>
+            </div>
+            <input type="checkbox" id="settingsOptShuffle" onchange="syncSettingsCheckboxes('shuffle')" class="w-4 h-4 rounded text-brand-600 focus:ring-brand-500">
+          </label>
+        </div>
+
+        <div class="border-t border-slate-100 dark:border-slate-800"></div>
+
+        <!-- Acció: Tornar a Config / Nou Test -->
+        <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-100 dark:border-slate-800 space-y-2">
+          <div class="text-xs font-semibold text-slate-900 dark:text-slate-200">Navegació i Sessió</div>
+          <div class="text-xs text-slate-500">Pots tornar a la selecció de blocs temàtics o començar un nou test.</div>
+          <button onclick="confirmGoToConfigFromModal()" class="w-full mt-2 py-2.5 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs flex items-center justify-center gap-2 transition-colors shadow-sm">
+            <i data-lucide="layers" class="w-4 h-4"></i>
+            <span>Tornar a la Selecció de Blocs / Inici</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Peu del Modal -->
+      <div class="p-4 bg-slate-50 dark:bg-slate-900/60 border-t border-slate-200 dark:border-slate-800 flex justify-end">
+        <button onclick="closeSettingsModal()" class="px-5 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold text-xs transition-colors">
+          Tancar
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- BANC DE DADES COMPLET: 120 PREGUNTES (30 PER TEMA) -->
+  <script>
+    const MASTER_QUESTIONS = [
+      // =========================================================================
+      // BLOC 1: TEMA 1A — GNU/Linux, Systemd, Kernel, Dispositius i Xarxa IP (1-30)
+      // =========================================================================
+      {
+        id: 1,
+        block: 1,
+        blockName: "Bloc 1: Tema 1A",
+        isExam: false,
+        title: "Orígens Històrics de GNU/Linux",
+        question: "Respecte als orígens de GNU/Linux, Linus Torvalds va iniciar el projecte GNU el 1983 desenvolupant les utilitats bàsiques de la shell, mentre que Richard Stallman va desenvolupar el nucli Linux el 1991 aprofitant el mode protegit de l'Intel 80386.",
+        options: ["Verdader", "Fals"],
+        answer: 1,
+        explanation: "Fals. Els protagonistes estan invertits: Richard Stallman va iniciar el projecte GNU el 1983 (utilitats essencials), mentre que Linus Torvalds va crear el nucli Linux el 1991 a Helsinki aprofitant el mode protegit de l'Intel 80386 i inspirant-se en Minix."
+      },
+      {
+        id: 2,
+        block: 1,
+        blockName: "Bloc 1: Tema 1A",
+        isExam: true,
+        title: "Systemd vs sysctl",
+        question: "Systemd és el system & service manager per a Linux i sysctl és l'ordre utilitzada des de l'espai d'usuari per interactuar amb systemd.",
+        options: ["Verdader", "Fals"],
+        answer: 1,
+        explanation: "Fals. L'ordre per interactuar amb systemd és 'systemctl'. L'ordre 'sysctl' serveix per llegir i modificar paràmetres del kernel en calent a /proc/sys (i de forma persistent a /etc/sysctl.conf)."
+      },
+      {
+        id: 3,
+        block: 1,
+        blockName: "Bloc 1: Tema 1A",
+        isExam: false,
+        title: "Targets de Systemd (Runlevel 3)",
+        question: "Si es desitja que un servidor Linux iniciï per defecte sense entorn gràfic, en consola pura multiusuari amb xarxa (l'equivalent a l'antic runlevel 3 de SystemV), quina ordre s'ha d'executar?",
+        options: [
+          "systemctl set-default graphical.target",
+          "systemctl isolate rescue.target",
+          "systemctl set-default multi-user.target",
+          "sysctl -w systemd.default=multi-user.target"
+        ],
+        answer: 2,
+        explanation: "'systemctl set-default multi-user.target' defineix el mode consola multiusuari amb xarxa (antic nivell 3) com a target per defecte d'arrencada."
+      },
+      {
+        id: 4,
+        block: 1,
+        blockName: "Bloc 1: Tema 1A",
+        isExam: false,
+        title: "Diagnòstic de Temps d'Arrencada",
+        question: "Per analitzar el temps d'inici del sistema durant el boot i llistar de manera ordenada quins serveis han trigat més temps a arrencar (per identificar colls d'ampolla), l'ordre adient de systemd és:",
+        options: [
+          "journalctl -b -u --time",
+          "systemd-analyze blame",
+          "systemctl --failed --time",
+          "systemd-analyze critical-chain"
+        ],
+        answer: 1,
+        explanation: "'systemd-analyze blame' mostra una llista ordenada de major a menor amb el temps d'inicialització de cada unitat. 'critical-chain' mostra l'arbre de dependències crítiques temporals."
+      },
+      {
+        id: 5,
+        block: 1,
+        blockName: "Bloc 1: Tema 1A",
+        isExam: true,
+        title: "Gestor de Dispositius: devfsd vs udev",
+        question: "devfsd és el gestor de dispositius del kernel dels Linux actuals i mostra una abstracció del HW a tot el programari. És el successor d'udevfs i hotplug i gestiona els device nodes al directori /dev i tots els events dintre de l'espai d'usuari en temps real.",
+        options: ["Verdader", "Fals"],
+        answer: 1,
+        explanation: "Fals. Pregunta d'examen oficial: El gestor actual en l'espai d'usuari és 'udev' (userspace /dev), el qual va substituir els antics 'devfsd' i 'hotplug'."
+      },
+      {
+        id: 6,
+        block: 1,
+        blockName: "Bloc 1: Tema 1A",
+        isExam: true,
+        title: "Consulta de Dispositius amb sysfs i udevadm",
+        question: "sysfs és un pseudo file system del kernel de Linux que exporta la informació de diferents subsistemes del kernel, dispositius hardware i drivers des del kernel's device model al user space fent servir virtual files visibles a /sys. A les versions actuals de Linux, amb quina ordre es pot obtenir tota la informació del dispositiu primer disc dur primera partició (/dev/sda1)?",
+        options: [
+          "cat /dev/sda1",
+          "sysctl -info /sys/block/sda/device/block/sda/sda1",
+          "cat /proc/disks/sda",
+          "udevadm info /dev/sda1"
+        ],
+        answer: 3,
+        explanation: "Pregunta d'examen oficial: 'udevadm info /dev/sda1' (o udevadm info -a -n /dev/sda) és l'eina encarregada d'extreure tota la informació exportada per sysfs per a un dispositiu concret."
+      },
+      {
+        id: 7,
+        block: 1,
+        blockName: "Bloc 1: Tema 1A",
+        isExam: true,
+        title: "Permisos i Propietat: chmod i chown",
+        question: "L'ordre chmod la pot fer servir el propietari d'un arxiu/directori per canviar els atributs rwx d'aquest, i chown ho pot fer servir el propietari d'un arxiu per canviar aquest arxiu (de la seva propietat) a la propietat d'un altre usuari.",
+        options: ["Verdader", "Fals"],
+        answer: 1,
+        explanation: "Fals. Pregunta d'examen oficial: Tot i que el propietari pot usar 'chmod' per modificar permisos rwx, per seguretat un usuari no privilegiat NO pot usar 'chown' per cedir la propietat dels seus fitxers a un altre usuari (només root pot fer-ho)."
+      },
+      {
+        id: 8,
+        block: 1,
+        blockName: "Bloc 1: Tema 1A",
+        isExam: false,
+        title: "Sistema de Fitxers JFS",
+        question: "Quin dels següents sistemes de fitxers és desenvolupat per IBM, es caracteritza per un baix consum de CPU i té un comportament excel·lent tant per a fitxers molt petits com per a fitxers grans?",
+        options: ["Ext4", "Btrfs", "XFS", "JFS"],
+        answer: 3,
+        explanation: "Segons la taula comparativa del Tema 1A, JFS (Journaled File System) és d'IBM, té baix consum de CPU i és molt bo tant per a fitxers petits com grans."
+      },
+      {
+        id: 9,
+        block: 1,
+        blockName: "Bloc 1: Tema 1A",
+        isExam: false,
+        title: "Muntatge Persistent a /etc/fstab",
+        question: "Per muntar de forma permanent una partició formatada en ext4 situada a /dev/sdb1 sobre el directori /mnt/dades en cada arrencada del sistema, quina línia s'ha d'afegir a l'arxiu /etc/fstab?",
+        options: [
+          "/mnt/dades /dev/sdb1 ext4 defaults 0 0",
+          "/dev/sdb1 /mnt/dades ext4 defaults 0 2",
+          "mount -t ext4 /dev/sdb1 /mnt/dades",
+          "sdb1 /mnt/dades nfs rw,sync 0 1"
+        ],
+        answer: 1,
+        explanation: "L'estructura de /etc/fstab és: <dispositiu> <punt_muntatge> <sistema_fitxers> <opcions> <dump> <pass>. Per tant: '/dev/sdb1 /mnt/dades ext4 defaults 0 2'."
+      },
+      {
+        id: 10,
+        block: 1,
+        blockName: "Bloc 1: Tema 1A",
+        isExam: true,
+        title: "Obsoleció d'ifconfig en favor d'ip",
+        question: "La configuració d'un dispositiu de xarxa en les últimes versions de Linux es pot fer amb l'ordre ip (p.ex. ip address add 172.16.1.1/24 dev ens3) o també modificant arxius en /etc (p.ex. en Debian /etc/network/interfaces) ja que l'ordre ifconfig és obsoleta i ha estat reemplaçada per ip.",
+        options: ["Verdader", "Fals"],
+        answer: 0,
+        explanation: "Verdader. Pregunta d'examen oficial: 'ifconfig' (paquet net-tools) està obsoleta i ha estat reemplaçada per l'ordre 'ip' (paquet iproute2)."
+      },
+      {
+        id: 11,
+        block: 1,
+        blockName: "Bloc 1: Tema 1A",
+        isExam: false,
+        title: " Filtratge de Logs amb journalctl",
+        question: "Quina ordre permet consultar l'històric de logs del sistema registrats per systemd que corresponen únicament a l'últim procés d'arrencada (boot) i filtrant exclusivament pel servei OpenSSH?",
+        options: [
+          "cat /var/log/syslog | grep ssh --boot",
+          "journalctl -b -u ssh",
+          "systemctl status ssh --history",
+          "journalctl -f /var/log/auth.log"
+        ],
+        answer: 1,
+        explanation: "L'opció '-b' filtra els registres de l'últim boot i '-u ssh' filtra per la unitat systemd del servei SSH."
+      },
+      {
+        id: 12,
+        block: 1,
+        blockName: "Bloc 1: Tema 1A",
+        isExam: false,
+        title: "Ubicació d'Unitats de Systemd",
+        question: "El fitxer declaratiu d'unitat que defineix les propietats locals d'un servei modificat per l'administrador del sistema s'emmagatzema a /etc/systemd/system, mentre que les unitats distribuïdes pels paquets se situen a /lib/systemd/system.",
+        options: ["Verdader", "Fals"],
+        answer: 0,
+        explanation: "Verdader. /etc/systemd/system conté les configuracions locals de l'administrador (i té màxima prioritat), mentre que /lib/systemd/system emmagatzema les unitats proporcionades pels paquets instal·lats."
+      },
+      {
+        id: 13,
+        block: 1,
+        blockName: "Bloc 1: Tema 1A",
+        isExam: false,
+        title: "Estadístiques d'E/S de Disc amb iostat",
+        question: "Si volem monitoritzar l'activitat d'entrada/sortida (I/O) i les estadístiques detallades de transferència dels discos del sistema en temps real actualitzant cada 2 segons un total de 5 mostres, executarem:",
+        options: [
+          "vmstat -i 5 2",
+          "df -Th 2 5",
+          "iostat -x 2 5",
+          "sar -disk -u"
+        ],
+        answer: 2,
+        explanation: "'iostat -x 2 5' mostra estadístiques esteses (-x) de disc i CPU cada 2 segons durant 5 iteracions."
+      },
+      {
+        id: 14,
+        block: 1,
+        blockName: "Bloc 1: Tema 1A",
+        isExam: false,
+        title: "Prestacions de Btrfs",
+        question: "El sistema de fitxers Btrfs es caracteritza principalment per suportar instantànies (snapshots), compressió transparent de dades, desfragmentació en línia i la gestió integrada de subvolums.",
+        options: ["Verdader", "Fals"],
+        answer: 0,
+        explanation: "Verdader. Btrfs és un sistema de fitxers Copy-on-Write amb suport natiu de snapshots, compressió transparent, desfragmentació en línia i subvolums."
+      },
+      {
+        id: 15,
+        block: 1,
+        blockName: "Bloc 1: Tema 1A",
+        isExam: false,
+        title: "Inspecció de Sockets amb ss",
+        question: "Quina ordre de xarxa moderna permet veure els sockets TCP en estat de recepció o escolta (listening), mostrant les adreces en format numèric juntament amb el nom i el PID del procés propietari?",
+        options: [
+          "netstat -a -p",
+          "ss -tlnp",
+          "iptables -L -n",
+          "ip -t -l -p"
+        ],
+        answer: 1,
+        explanation: "A l'ordre 'ss' (que substitueix netstat): -t (TCP), -l (listening), -n (numèric sense resoldre noms) i -p (procés/PID)."
+      },
+      {
+        id: 16,
+        block: 1,
+        blockName: "Bloc 1: Tema 1A",
+        isExam: true,
+        title: "Ordres Essencials d'Estat del Sistema",
+        question: "Les ordres essencials per treure info de l'estat d'un sistema Linux són (les més habituals):\n• lscpu, lspci, hwinfo, lsusb: per informació del HW\n• lsmod, ps, top: mòduls carregats i processos\n• free, du, df: memòria ocupada/lliure i espai de disc ocupat/lliure.",
+        options: ["Verdader", "Fals"],
+        answer: 0,
+        explanation: "Verdader. Pregunta literal d'examen oficial: totes aquestes utilitats corresponen exactament a la categoria descrita."
+      },
+      {
+        id: 17,
+        block: 1,
+        blockName: "Bloc 1: Tema 1A",
+        isExam: true,
+        title: "Journaling: ReiserFS i Ext4",
+        question: "Sistemes d'arxius: ReiserFS i Ext4 són dos sistemes d'arxius disponibles en Linux que tenen característiques avançades per recuperar la informació (journaling) en cas que el sistema d'arxiu tingui una aturada abrupta (per exemple per un tall d'energia). No obstant el més eficient, amb suport i el que més es fa servir és l'Ext4.",
+        options: ["Verdader", "Fals"],
+        answer: 0,
+        explanation: "Verdader. Pregunta literal d'examen oficial: tant ReiserFS com Ext4 disposen de journaling per recuperar-se d'aturades abruptes, sent Ext4 l'estàndard més estès i amb millor suport."
+      },
+      {
+        id: 18,
+        block: 1,
+        blockName: "Bloc 1: Tema 1A",
+        isExam: true,
+        title: "Inicialització durant el Procés de Boot",
+        question: "La inicialització durant el procés de boot dels Linux moderns (p.ej. Debian 10+ / Ubuntu 19.04+ / CentOS 7+) es fa a través de:",
+        options: [
+          "A través del daemon d'upstart que permet fer l'arrencada de forma asincrònica.",
+          "A través dels daemons initd i sysctl (per configurar els dispositius del kernel).",
+          "A través d'scripts d'arrencada dels serveis en /etc/init.d",
+          "A través del daemon systemd."
+        ],
+        answer: 3,
+        explanation: "Pregunta d'examen oficial: Les distribucions Linux modernes utilitzen el dimoni 'systemd' com a gestor d'inicialització (PID 1), havent substituït SystemV (/etc/init.d) i Upstart."
+      },
+      {
+        id: 19,
+        block: 1,
+        blockName: "Bloc 1: Tema 1A",
+        isExam: true,
+        title: "Llistat de Targets a Systemd",
+        question: "Systemd gestiona els targets tal i com SystemV gestionava els runlevels: per exemple, per llistar els targets actius es pot fer servir l'ordre 'systemctl list-units --type=target'.",
+        options: ["Verdader", "Fals"],
+        answer: 0,
+        explanation: "Verdader. Pregunta literal d'examen oficial: 'systemctl list-units --type=target' llista totes les unitats de tipus target."
+      },
+      {
+        id: 20,
+        block: 1,
+        blockName: "Bloc 1: Tema 1A",
+        isExam: true,
+        title: "NetworkManager i /etc/network/interfaces",
+        question: "Indicar l'opció correcta si es desitja que el Network Manager (daemon de gestió de xarxa habitual en totes les distribucions) no gestioni (automàticament) els dispositius que es troben definits en /etc/network/interfaces:",
+        options: [
+          "Modificar interfaces=true a l'arxiu /etc/sysctl.conf (variables del Kernel).",
+          "Indicar hotplug device (p.ex. hotplug ens3) abans de la configuració a /etc/network/interfaces.",
+          "Indicar auto device (p.ex. auto ens3) abans de la configuració a /etc/network/interfaces.",
+          "NO s'ha de fer res ja que el daemon detectarà si està configurada en el /etc/network/interfaces i no la gestionarà (per defecte managed=false a NetworkManager.conf)."
+        ],
+        answer: 3,
+        explanation: "Pregunta d'examen oficial: Per defecte en Debian/Ubuntu el connector ifupdown de NetworkManager té 'managed=false', per la qual cosa detecta automàticament qualsevol interfície declarada a /etc/network/interfaces i la ignora sense haver de fer res addicional."
+      },
+      {
+        id: 21,
+        block: 1,
+        blockName: "Bloc 1: Tema 1A",
+        isExam: true,
+        title: "Seguretat WiFi: WPA vs WPA2",
+        question: "La diferència entre WPA i WPA2 és que totes dues tenen l'autenticació per Pre-Shared Key (PSK), però WPA2 fa servir AES com a mecanisme de xifratge en lloc de TKIP.",
+        options: ["Verdader", "Fals"],
+        answer: 0,
+        explanation: "Verdader. Pregunta d'examen oficial: En entorns personals (PSK), WPA utilitzava TKIP mentre que WPA2 va introduir l'algorisme de xifratge simètric AES (CCMP), molt més segur."
+      },
+      {
+        id: 22,
+        block: 1,
+        blockName: "Bloc 1: Tema 1A",
+        isExam: false,
+        title: "Impacte de Linux: Android i Supercomputació",
+        question: "Segons les dades del Tema 1A sobre l'ecosistema GNU/Linux, quina de les següents afirmacions és certa?",
+        options: [
+          "Android es basa en un nucli BSD modificat per Google i representa menys del 30% del mercat mòbil.",
+          "Android es basa en una versió modificada del nucli Linux (AOSP) i el 96,4% dels supercomputadors de la llista TOP500 executen Linux.",
+          "Linux domina l'escriptori d'usuari final amb un 83% de quota, però gairebé no s'utilitza en supercomputació.",
+          "LliureX, Linkat i Linex són distribucions empresarials privatives desenvolupades per RedHat."
+        ],
+        answer: 1,
+        explanation: "Android (AOSP, Open Handset Alliance) es basa en un nucli Linux modificat (~83% de quota i ~3.900M dispositius) i el 96,4% dels supercomputadors del TOP500 executen Linux. LliureX, Linkat i Linex són distribucions d'administracions públiques."
+      },
+      {
+        id: 23,
+        block: 1,
+        blockName: "Bloc 1: Tema 1A",
+        isExam: false,
+        title: "Blocs Funcionals: Nucli vs Utilitats GNU",
+        question: "Dins dels tres blocs funcionals d'un sistema GNU/Linux, quina és la responsabilitat específica del Nucli Linux (Kernel) en contraposició a les Utilitats GNU?",
+        options: [
+          "El Nucli aporta el compilador gcc, la shell bash i els gestors de paquets apt/dnf.",
+          "El Nucli gestiona el maquinari, processos, memòria, xarxa i dispositius, i suporta cgroups, namespaces i KVM.",
+          "Les Utilitats GNU gestionen directament la paginació de memòria RAM i les interrupcions de la CPU.",
+          "El tallafocs iptables/nftables i l'espai de noms del kernel formen part exclusivament de l'editor vim."
+        ],
+        answer: 1,
+        explanation: "El Nucli Linux gestiona maquinari, processos, memòria, xarxa, dispositius, cgroups, namespaces i KVM. Les Utilitats GNU proporcionen gcc, bash, apt/dnf, vim, ls, grep, awk i sed."
+      },
+      {
+        id: 24,
+        block: 1,
+        blockName: "Bloc 1: Tema 1A",
+        isExam: false,
+        title: "Post-instal·lació: systemctl enable --now i visudo",
+        question: "En la fase de post-instal·lació d'un servidor, quin efecte tenen l'ordre 'sudo systemctl enable ssh --now' i la línia 'adminp ALL=(ALL) NOPASSWD:ALL' editada amb 'sudo visudo'?",
+        options: [
+          "Instal·la el paquet openssh-server des de zero i obliga l'usuari adminp a canviar la contrasenya cada vegada que fa sudo.",
+          "Habilita el servei SSH perquè arrenqui a cada inici del sistema arrencant-lo també immediatament en la sessió actual, i permet a l'usuari adminp executar qualsevol ordre amb sudo sense demanar contrasenya.",
+          "Atura el servei SSH actualment i bloqueja l'accés root a l'usuari adminp.",
+          "Crea les claus criptogràfiques RSA per a l'usuari adminp sense protecció de passphrase."
+        ],
+        answer: 1,
+        explanation: "El flag '--now' combinat amb 'enable' activa el servei per a futurs arrencades i l'inicia immediatament. 'NOPASSWD:ALL' a sudoers permet a adminp executar qualsevol comanda com a root sense introduir password."
+      },
+      {
+        id: 25,
+        block: 1,
+        blockName: "Bloc 1: Tema 1A",
+        isExam: false,
+        title: "Sistemes de Fitxers: XFS, ZFS i Swap",
+        question: "Relaciona correctament les característiques dels sistemes d'emmagatzematge XFS, ZFS i Swap vistes al Tema 1A:",
+        options: [
+          "XFS és excel·lent per a fitxers grans i escalable; ZFS destaca per la integritat de dades, snapshots i striping dinàmic; Swap no és un sistema de fitxers sinó memòria virtual.",
+          "Swap és el sistema de fitxers per defecte d'Ubuntu per a arxius d'usuari; XFS no suporta fitxers de més de 2 GB.",
+          "ZFS és un sistema obsolet sense suport de snapshots; XFS és exclusiu per a particions de memòria d'intercanvi.",
+          "Tots tres són sistemes de fitxers en xarxa distribuïts basats en RPC."
+        ],
+        answer: 0,
+        explanation: "Segons la taula de sistemes de fitxers del Tema 1A: XFS destaca en fitxers grans amb baix consum de CPU; ZFS aporta integritat de dades, snapshots i striping dinàmic; i Swap és un espai de memòria virtual (en partició o arxiu), no un FS."
+      },
+      {
+        id: 26,
+        block: 1,
+        blockName: "Bloc 1: Tema 1A",
+        isExam: false,
+        title: "Configuració de Xarxa Moderna amb Netplan",
+        question: "En sistemes Ubuntu 18.04+ i Debian 12+, com funciona l'eina Netplan per a la configuració d'interfícies de xarxa?",
+        options: [
+          "Substitueix el kernel de Linux per un dimoni propi escrit en Python.",
+          "Utilitza fitxers de configuració amb sintaxi YAML per generar la configuració cap al renderer escollit (NetworkManager o systemd-networkd) i s'aplica amb 'sudo netplan apply'.",
+          "Edita directament l'arxiu /etc/sysctl.conf i s'aplica amb 'ifconfig netplan up'.",
+          "Només permet configurar adreces per DHCP i no admet servidors DNS ni adreces estàtiques."
+        ],
+        answer: 1,
+        explanation: "Netplan llegeix arxius YAML (on es defineixen ethernets, addresses, nameservers i el renderer com 'networkd') i amb 'sudo netplan apply' genera i activa la configuració."
+      },
+      {
+        id: 27,
+        block: 1,
+        blockName: "Bloc 1: Tema 1A",
+        isExam: false,
+        title: "Conceptes IPv4, IPv6 i Desactivació d'IPv6",
+        question: "Quina és l'adreça de loopback en IPv6, com es representa la transformació d'una IPv4 (ex. 192.168.1.1) a IPv6 i com es desactiva IPv6 de forma permanent al kernel?",
+        options: [
+          "Loopback és 127.0.0.1::1, la transformació és ipv6::192.168.1.1 i es desactiva a /etc/hosts.",
+          "Loopback és ::1, la transformació és ::ffff:192.168.1.1 i es desactiva afegint 'net.ipv6.conf.all.disable_ipv6 = 1' a /etc/sysctl.conf.",
+          "Loopback és 0:0:0:0, no existeix transformació IPv4 a IPv6 i es desactiva amb 'ip -6 delete'.",
+          "IPv6 utilitza adreces de 64 bits i el loopback és fe80::1."
+        ],
+        answer: 1,
+        explanation: "IPv6 té 128 bits, la seva adreça de loopback és '::1', el mapeig IPv4->IPv6 s'escriu '::ffff:192.168.1.1' i per inhabilitar-lo al kernel s'afegeix 'net.ipv6.conf.all.disable_ipv6 = 1' a /etc/sysctl.conf."
+      },
+      {
+        id: 28,
+        block: 1,
+        blockName: "Bloc 1: Tema 1A",
+        isExam: false,
+        title: "Configuració WiFi per Consola (WPA/WPA2)",
+        question: "Quines eines s'utilitzen des de la línia d'ordres a GNU/Linux per escanejar xarxes WiFi disponibles i connectar-se a una xarxa protegida amb WPA/WPA2 generant la clau xifrada?",
+        options: [
+          "iwconfig i 'iwlist scanning' per veure xarxes, i 'wpa_supplicant' juntament amb 'wpa_passphrase' per generar la clau xifrada.",
+          "ethtool --wifi-scan i ssh-keygen per generar la clau WPA2.",
+          "netstat -wifi i iptables -t wifi.",
+          "udevadm wifi-connect i dnsmasq."
+        ],
+        answer: 0,
+        explanation: "Segons el guió del Tema 1A, s'utilitzen 'iwconfig' i 'iwlist scanning' per inspeccionar i buscar xarxes sense fil, i per a WPA/WPA2 s'empra 'wpa_supplicant' amb 'wpa_passphrase'."
+      },
+      {
+        id: 29,
+        block: 1,
+        blockName: "Bloc 1: Tema 1A",
+        isExam: false,
+        title: "Gestió de Processos i Prioritats",
+        question: "Si un administrador vol visualitzar els processos en format d'arbre jeràrquic i posteriorment canviar la prioritat de planificació de CPU d'un procés que ja es troba en execució, quines ordres ha d'emprar?",
+        options: [
+          "lsblk per veure l'arbre i chmod per canviar la prioritat.",
+          "pstree per veure l'arbre jeràrquic i renice per modificar la prioritat d'un procés en execució.",
+          "top -tree i killall -priority.",
+          "vmstat per l'arbre i fg/bg per assignar el nivell de nice."
+        ],
+        answer: 1,
+        explanation: "'pstree' mostra l'arbre de processos pares i fills; 'nice' llança un procés amb una prioritat determinada i 'renice' altera la prioritat d'un procés que ja està corrent."
+      },
+      {
+        id: 30,
+        block: 1,
+        blockName: "Bloc 1: Tema 1A",
+        isExam: false,
+        title: "Auditoria de Logs Tradicionals i Rotació",
+        question: "Quina eina s'encarrega de comprimir i rotar periòdicament els fitxers de registre de /var/log/ perquè no omplin el disc, i quina ordre permet buscar intents fallits d'inici de sessió al registre d'autenticació?",
+        options: [
+          "systemd-analyze i 'cat /var/log/dmesg | grep error'.",
+          "logrotate s'encarrega de la rotació/compressió, i 'sudo grep \"Failed password\" /var/log/auth.log' permet localitzar els intents fallits d'accés.",
+          "sar rota els logs i 'journalctl --delete' busca contrasenyes errònies.",
+          "cron-clean i 'find /etc/passwd -name failed'."
+        ],
+        answer: 1,
+        explanation: "'logrotate' gestiona la rotació i compressió automàtica de logs a /var/log/, i l'exemple del Tema 1A per auditar accessos fallits és 'sudo grep \"Failed password\" /var/log/auth.log'."
+      },
+
+      // =========================================================================
+      // BLOC 2: TEMES 1B & 1C — Xarxes, NAT, Serveis i Emmagatzematge (31-60)
+      // =========================================================================
+      {
+        id: 31,
+        block: 2,
+        blockName: "Bloc 2: Temes 1B & 1C",
+        isExam: false,
+        title: "Persistència d'IP Forwarding",
+        question: "Per a fer que un equip Linux actuï com a router reenviant paquets de manera permanent entre les seves interfícies en cada reinici, la variable 'net.ipv4.ip_forward = 1' s'ha de configurar a:",
+        options: [
+          "/etc/network/interfaces",
+          "/etc/iptables/routing.conf",
+          "/etc/sysctl.conf",
+          "/etc/default/networking"
+        ],
+        answer: 2,
+        explanation: "A '/etc/sysctl.conf' es defineixen de forma permanent els paràmetres del kernel com 'net.ipv4.ip_forward = 1' i es carreguen amb 'sysctl -p'."
+      },
+      {
+        id: 32,
+        block: 2,
+        blockName: "Bloc 2: Temes 1B & 1C",
+        isExam: true,
+        title: "Configuració d'IP Masquerading al Router",
+        question: "Consideri una màquina que té una IP pública i que actua com a router d'una xarxa privada (sobre altra interfície de xarxa), que la variable /proc/sys/net/ipv4/ip_forward està a 1 i que el default gateway de les màquines de la xarxa privada és la IP privada del router. Quina instrucció ha d'afegir perquè totes les màquines de la xarxa privada surtin a la xarxa pública?",
+        options: [
+          "En cada màquina de la xarxa privada: iptables -t nat -A POSTROUTING -j MASQUERADE",
+          "En el router: iptables -t nat -A PREROUTING -j MASQUERADE",
+          "En el router: iptables -t nat -A POSTROUTING -j DNAT IP_PUBLICA",
+          "En el router: iptables -t nat -A POSTROUTING -j MASQUERADE"
+        ],
+        answer: 3,
+        explanation: "Pregunta literal d'examen oficial: El Masquerading (SNAT dinàmic) s'aplica únicament al router i sobre la cadena 'POSTROUTING' de la taula 'nat'."
+      },
+      {
+        id: 33,
+        block: 2,
+        blockName: "Bloc 2: Temes 1B & 1C",
+        isExam: true,
+        title: "Definició d'IP Masquerading",
+        question: "L'IP-masquerading és una tècnica que amaga tot un espai d'adreces IP, generalment format per adreces IP privades, darrere d'una sola adreça IP en una altra (generalment una adreça pública).",
+        options: ["Verdader", "Fals"],
+        answer: 0,
+        explanation: "Verdader. Pregunta literal d'examen oficial."
+      },
+      {
+        id: 34,
+        block: 2,
+        blockName: "Bloc 2: Temes 1B & 1C",
+        isExam: true,
+        title: "Client DHCP a /etc/network/interfaces",
+        question: "DHCP (Dynamic Host Configuration Protocol) és un servei on les màquines client obtenen la informació fent servir un missatge de broadcast en el segment de xarxa en què estiguin connectades. La configuració del client en /etc/network/interfaces és:\niface ens3 inet dhcp\nper exemple per configurar el dispositiu ens3.",
+        options: ["Verdader", "Fals"],
+        answer: 0,
+        explanation: "Verdader. Pregunta literal d'examen oficial."
+      },
+      {
+        id: 35,
+        block: 2,
+        blockName: "Bloc 2: Temes 1B & 1C",
+        isExam: false,
+        title: "Funció del DHCP Relay",
+        question: "Per què és imprescindible un agent DHCP Relay en una xarxa dividida en diferents subxarxes mitjançant routers quan el servidor DHCP és centralitzat?",
+        options: [
+          "Perquè el servei DHCP funciona exclusivament sobre enllaços de fibra òptica.",
+          "Perquè els clients DHCP fan peticions per broadcast i els routers no propaguen aquest trànsit entre subxarxes; el Relay el rep i el reenvia com a unicast al servidor DHCP.",
+          "Perquè el servidor DHCP requereix autenticació per claus SSH que el client no té.",
+          "Perquè el relay és l'encarregat de traduir noms de domini a adreces MAC."
+        ],
+        answer: 1,
+        explanation: "El trànsit de broadcast no travessa els routers. El DHCP Relay ('isc-dhcp-relay') escolta els broadcasts a la subxarxa local i els reenvia en unicast a la IP configurada a SERVERS dins de /etc/default/isc-dhcp-relay."
+      },
+      {
+        id: 36,
+        block: 2,
+        blockName: "Bloc 2: Temes 1B & 1C",
+        isExam: false,
+        title: "Servidor DNS i DHCP Lleuger: Dnsmasq",
+        question: "Quin servidor de resolució de noms DNS destaca per la seva lleugeresa en entorns petits/mitjans, és capaç d'integrar també el servei DHCP i resol directament els noms definits al fitxer local /etc/hosts?",
+        options: ["BIND9", "Dnsmasq", "Unbound", "PowerDNS"],
+        answer: 1,
+        explanation: "Dnsmasq és lleuger, ideal per a xarxes petites/mitjanes, llegeix directament /etc/hosts i pot oferir tant DNS com DHCP."
+      },
+      {
+        id: 37,
+        block: 2,
+        blockName: "Bloc 2: Temes 1B & 1C",
+        isExam: true,
+        title: "Trampa d'Examen: NFS i /etc/fstab al Servidor",
+        question: "El NFS és un servei per a crear un sistema servidor d'arxius que treballa en forma client-servidor, on en el servidor els filesystems per exportar als clients estan en el /etc/fstab i en el client s'han de muntar fent servir l'ordre:\nmount -t nfs IP_servidor:/directori_font /directori_destí.",
+        options: ["Verdader", "Fals"],
+        answer: 1,
+        explanation: "Fals. Pregunta clàssica d'examen oficial: En el servidor NFS els directoris exportats es defineixen a '/etc/exports', NO a '/etc/fstab' (que és on el client pot automatitzar el muntatge)."
+      },
+      {
+        id: 38,
+        block: 2,
+        blockName: "Bloc 2: Temes 1B & 1C",
+        isExam: false,
+        title: "Directiva no_root_squash a NFS",
+        question: "A l'arxiu /etc/exports d'un servidor NFS, quin efecte té incloure l'opció 'no_root_squash'?",
+        options: [
+          "Impedeix que l'usuari root del client pugui muntar el sistema de fitxers remot.",
+          "Converteix totes les peticions del root client en l'usuari sense privilegis nobody.",
+          "Permet que l'usuari root de la màquina client conservi els permisos de root (UID 0) sobre els fitxers compartits del servidor NFS.",
+          "Comprimeix els fitxers del directori arrel abans d'enviar-los per la xarxa."
+        ],
+        answer: 2,
+        explanation: "Per defecte NFS aplica 'root_squash' (mapejant el root remot a 'nobody' per seguretat). Amb 'no_root_squash', el root del client actua amb permisos complets de superusuari sobre la carpeta exportada."
+      },
+      {
+        id: 39,
+        block: 2,
+        blockName: "Bloc 2: Temes 1B & 1C",
+        isExam: false,
+        title: "Diferència Arquitectònica NAS vs SAN",
+        question: "Quina és la diferència fonamental entre una arquitectura d'emmagatzematge NAS (Network Attached Storage) i una SAN (Storage Area Network)?",
+        options: [
+          "El NAS opera a nivell de bloc i la SAN opera a nivell de fitxer.",
+          "El NAS proporciona accés a nivell de fitxer (protocols NFS, SMB/CIFS, AFP), mentre que la SAN proporciona emmagatzematge a nivell de bloc sobre una xarxa dedicada (iSCSI, Fibre Channel, AoE) sense abstracció de fitxers.",
+          "La SAN només admet discos magnètics SATA i el NAS només admet memòries NVMe.",
+          "El NAS no permet configurar cap nivell de RAID."
+        ],
+        answer: 1,
+        explanation: "Diferència clau del Tema 1B/1C: NAS = fitxers (NFS, SMB, AFP); SAN = blocs (iSCSI, Fibre Channel, AoE). Una SAN + un sistema de fitxers damunt proporciona accés a fitxers."
+      },
+      {
+        id: 40,
+        block: 2,
+        blockName: "Bloc 2: Temes 1B & 1C",
+        isExam: false,
+        title: "Sistema de Fitxers Distribuït: GlusterFS",
+        question: "Quin sistema de fitxers de xarxa de codi obert està dissenyat per a oferir emmagatzematge distribuït altament escalable per a núvol i streaming utilitzant maquinari habitual (mitjançant ordres com 'gluster peer probe' i 'gluster volume create')?",
+        options: ["DAS", "Samba", "GlusterFS", "Xinetd"],
+        answer: 2,
+        explanation: "GlusterFS és el sistema de fitxers distribuït i escalable del temari que agrupa servidors amb 'gluster peer probe' i crea volums amb 'gluster volume create'."
+      },
+      {
+        id: 41,
+        block: 2,
+        blockName: "Bloc 2: Temes 1B & 1C",
+        isExam: true,
+        title: "Visualització Gràfica Remota per SSH (Nagios / Firefox)",
+        question: "Consideri que té un servidor al qual solament es pot accedir per ssh, que té instal·lat un software de monitorització (p.ex. Nagios) i aquesta màquina no té instal·lat cap entorn gràfic. Amb quina seqüència d'ordres podria veure la monitorització remota en forma gràfica en la seva màquina Linux?",
+        options: [
+          "ssh -X user@IP_server, introduir el passwd i després executar firefox &",
+          "ssh user@IP_server -c /usr/bin/nagios3 (posant remote_host = IP_Local a nagios.conf).",
+          "Instal·lant el programari Rmon sobre la màquina que executa Nagios.",
+          "No es pot, ja que en no tenir entorn gràfic instal·lat al servidor no es podrà executar cap aplicació gràfica."
+        ],
+        answer: 0,
+        explanation: "Pregunta literal d'examen oficial: Mitjançant X11 Forwarding ('ssh -X user@IP_server') podem llançar 'firefox &' al servidor i la finestra es dibuixarà al servidor X gràfic de la nostra màquina client Linux."
+      },
+      {
+        id: 42,
+        block: 2,
+        blockName: "Bloc 2: Temes 1B & 1C",
+        isExam: false,
+        title: "Seguretat a SSH: PermitRootLogin",
+        question: "Quina directiva de '/etc/ssh/sshd_config' controla si es permet o es denega l'inici de sessió directe de l'usuari root a través de SSH?",
+        options: ["RootAccess Deny", "IgnoreRhosts yes", "PermitRootLogin", "X11Forwarding"],
+        answer: 2,
+        explanation: "La directiva 'PermitRootLogin' (habitualment configurada a 'no' per seguretat) gestiona si root pot autenticar-se directament per SSH."
+      },
+      {
+        id: 43,
+        block: 2,
+        blockName: "Bloc 2: Temes 1B & 1C",
+        isExam: false,
+        title: "Protecció DoS a Xinetd (cps)",
+        question: "En el super-daemon xinetd, quina opció de configuració permet limitar les connexions per segon d'un servei per fer front a atacs de denegació de servei (DoS)?",
+        options: ["max_load", "only_from", "cps", "rate_limit"],
+        answer: 2,
+        explanation: "A xinetd, 'cps' (connections per second) limita la taxa de connexions entrants per mitigar atacs DoS, mentre que 'only_from' restringeix quines IPs o xarxes poden accedir al servei."
+      },
+      {
+        id: 44,
+        block: 2,
+        blockName: "Bloc 2: Temes 1B & 1C",
+        isExam: false,
+        title: "Format i Comportament d'IP Àlies",
+        question: "Quin format té un àlies d'interfície de xarxa a '/etc/network/interfaces' per configurar múltiples IPs en una sola targeta física (NIC) i què passa quan s'activa l'àlies?",
+        options: [
+          "Té el format eth0:0, eth0:1 i en activar-se l'àlies també s'activa la interfície pare.",
+          "Té el format alias_eth0 i en activar-se desconnecta la IP principal de la NIC.",
+          "Té el format eth0/1 i requereix dues targetes de xarxa físiques connectades en pont.",
+          "Només es pot configurar amb DHCP i mai amb IP estàtica."
+        ],
+        answer: 0,
+        explanation: "Segons el guió del Tema 1B/1C, el format d'IP Àlies és 'eth0:0', 'eth0:1' i en activar-se l'àlies s'activa també la interfície pare."
+      },
+      {
+        id: 45,
+        block: 2,
+        blockName: "Bloc 2: Temes 1B & 1C",
+        isExam: true,
+        title: "Trampa d'Examen: Points of Presence (PoP)",
+        question: "Els points of presence (PoP) és una peça fonamental de la gestió de paquets dels algoritmes de routing (bàsicament RIP -routing information protocol- o OSPF -open shortest path first-) que permeten obtenir informació, detectar congestions i solucionar problemes de routing en una xarxa global o una WAN.",
+        options: ["Verdader", "Fals"],
+        answer: 1,
+        explanation: "Fals. Pregunta literal d'examen oficial: Els PoPs (Points of Presence) són nodes distribuïts geogràficament propis de les arquitectures CDN (Content Delivery Networks), no pas dels algoritmes de routing RIP o OSPF."
+      },
+      {
+        id: 46,
+        block: 2,
+        blockName: "Bloc 2: Temes 1B & 1C",
+        isExam: true,
+        title: "Trampa d'Examen: DNAT en cadena POSTROUTING",
+        question: "Amb l'ordre 'iptables -t nat -A POSTROUTING -i ens3 -p tcp --dport 80 -j DNAT --to 20.20.20.20:80' puc (seleccionar la que més s'adeqüi):",
+        options: [
+          "Tenir en capa 3 la funció equivalent a un proxy reverse.",
+          "Tenir en capa 3 la funció equivalent a un proxy reverse però s'ha de canviar el chain ja que no pot ser POSTROUTING (ha de ser PREROUTING).",
+          "Tenir en capa 3 la funció equivalent a un proxy reverse però s'ha de canviar el chain que ha de ser FORWARD i no sobre la taula NAT (-t nat).",
+          "Tenir en capa 3 la funció equivalent a un proxy forward."
+        ],
+        answer: 1,
+        explanation: "Pregunta literal d'examen oficial: El redireccionament de port entrant (DNAT, que equival funcionalment en capa 3 a redirigir trànsit cap a un servidor intern com un reverse proxy) NO es pot posar a POSTROUTING ni combinar amb '-i' allà; ha d'anar a la cadena 'PREROUTING'."
+      },
+      {
+        id: 47,
+        block: 2,
+        blockName: "Bloc 2: Temes 1B & 1C",
+        isExam: true,
+        title: "Cas Pràctic d'Examen: Routing entre 3 Màquines Virtuals",
+        question: "Consideri que disposa de tres màquines virtuals:\n• A (amb una interfície de xarxa): 192.168.1.2\n• B (amb dues interfícies de xarxa): 192.168.1.100 i 192.168.0.100\n• C (amb dues interfícies de xarxa): 192.168.1.200 i 192.168.0.200\nQuina regla de routing ha de posar en A perquè un paquet de C arribi a A i torni a C?",
+        options: [
+          "No es poden connectar si no es canvien els default gateway de B i C.",
+          "ip route add 192.168.0.0/24 dev ens3 ja que el routing és directe.",
+          "No es necessita routing.",
+          "ip route add 192.168.1.0/24 via 192.168.0.0/24 dev ens3"
+        ],
+        answer: 2,
+        explanation: "Pregunta literal d'examen oficial: Tant la màquina A (192.168.1.2) com la màquina C (192.168.1.200) tenen una interfície connectada directament a la mateixa xarxa local 192.168.1.0/24! Per tant, es comuniquen directament a nivell 2 sense necessitar cap regla de routing."
+      },
+      {
+        id: 48,
+        block: 2,
+        blockName: "Bloc 2: Temes 1B & 1C",
+        isExam: true,
+        title: "Cas Pràctic d'Examen: Exportació NFS a /etc/exports",
+        question: "Per exportar el directori /home per a tots els usuaris que tinguin possibilitats d'accedir de les màquines clients que estan en les xarxes 172.16.1.0/24 i 172.16.2.0/24 i que tinguin privilegis per llegir i escriure (inclòs root) seria:",
+        options: [
+          "Afegint al /etc/exports: /home 172.16.1.0/16(rw,sync,no_root_squash)",
+          "Afegint al /etc/exports: /home (rw,sync)",
+          "Afegint al /etc/exports: /home 172.16.0.0/16()",
+          "Executant: exportfs /home 172.16.1/24 172.16.2.0/24 (rw,sync)"
+        ],
+        answer: 0,
+        explanation: "Pregunta literal d'examen oficial: S'afegeix a /etc/exports el directori '/home' seguit de la màscara que engloba les subxarxes i entre parèntesis '(rw,sync,no_root_squash)'."
+      },
+      {
+        id: 49,
+        block: 2,
+        blockName: "Bloc 2: Temes 1B & 1C",
+        isExam: true,
+        title: "Matís d'Examen sobre el Paràmetre ip_forward",
+        question: "El ip_forward és un paràmetre del kernel que permet que un paquet pugui ser encaminat (routing) des d'una interfície de xarxa i es modifica en l'arxiu /etc/sysctl.conf.",
+        options: ["Verdader", "Fals"],
+        answer: 1,
+        explanation: "Fals (segons la plantilla oficial de l'examen del professor). El matís trampa és doble: l'encaminament (routing) es fa ENTRE dues interfícies de xarxa (no des d'una sola), i l'arxiu que es diu exactament 'ip_forward' és '/proc/sys/net/ipv4/ip_forward', mentre que a '/etc/sysctl.conf' la clau completa s'escriu 'net.ipv4.ip_forward = 1'."
+      },
+      {
+        id: 50,
+        block: 2,
+        blockName: "Bloc 2: Temes 1B & 1C",
+        isExam: false,
+        title: "Gestió de Rutes Estàtiques amb ip route",
+        question: "Quina ordre de la suite iproute2 permet afegir una ruta estàtica cap a la xarxa 192.168.2.0/24 passant pel router 192.168.1.254 a través de la interfície eth0?",
+        options: [
+          "ip route add 192.168.2.0/24 via 192.168.1.254 dev eth0",
+          "route add -net 192.168.2.0 gw 192.168.1.254",
+          "ip address route 192.168.1.254 to 192.168.2.0/24",
+          "sysctl -w net.ipv4.route=192.168.2.0/24"
+        ],
+        answer: 0,
+        explanation: "La sintaxi exacta d'iproute2 vista al temari és 'ip route add 192.168.2.0/24 via 192.168.1.254 dev eth0' (i per a la porta d'enllaç per defecte: 'ip route add default via 192.168.1.1')."
+      },
+      {
+        id: 51,
+        block: 2,
+        blockName: "Bloc 2: Temes 1B & 1C",
+        isExam: false,
+        title: "Persistència i Diagnòstic de NAT amb iptables",
+        question: "Com es poden fer persistents les regles d'iptables en Debian/Ubuntu perquè es mantinguin després d'un reinici, i quina ordre mostra exclusivament les regles de la taula NAT sense resoldre noms DNS?",
+        options: [
+          "Instal·lant 'iptables-persistent' (i executant 'netfilter-persistent save' o 'iptables-save > /etc/default/iptables'), i consultant amb 'iptables -t nat -L -n'.",
+          "Executant 'systemctl enable iptables' i consultant amb 'iptables --show-nat'.",
+          "Guardant les regles a '/etc/fstab' i executant 'ss -nat'.",
+          "Les regles d'iptables ja són persistents per defecte en la memòria NVRAM de la targeta de xarxa."
+        ],
+        answer: 0,
+        explanation: "Per defecte les regles d'iptables es perden en reiniciar; es fan persistents amb 'iptables-persistent' / 'netfilter-persistent save' (o 'iptables-save > /etc/default/iptables') i s'inspecciona la taula NAT amb 'iptables -t nat -L -n'."
+      },
+      {
+        id: 52,
+        block: 2,
+        blockName: "Bloc 2: Temes 1B & 1C",
+        isExam: false,
+        title: "Diferència entre ss -a i ss -l",
+        question: "En el diagnòstic de ports i connexions de xarxa amb l'eina 'ss', quina diferència hi ha entre executar 'ss -a' i executar 'ss -l'?",
+        options: [
+          "'ss -a' mostra només sockets ARP i 'ss -l' mostra sockets de loopback.",
+          "'ss -a' mostra tots els sockets (tant els que estan escoltant com les connexions establertes), mentre que 'ss -l' mostra únicament els sockets en estat d'escolta (listening).",
+          "'ss -a' tanca totes les connexions actives i 'ss -l' les bloqueja al firewall.",
+          "Són sinònims exactes."
+        ],
+        answer: 1,
+        explanation: "L'opció '-a' (all) mostra tant sockets en escolta com connexions establertes; l'opció '-l' (listening) filtra només els ports que estan esperant connexions entrants."
+      },
+      {
+        id: 53,
+        block: 2,
+        blockName: "Bloc 2: Temes 1B & 1C",
+        isExam: false,
+        title: "Configuració Avançada de Dnsmasq",
+        question: "Al fitxer '/etc/dnsmasq.conf', què indiquen les directives 'domain-needed', 'local=/gax.org/' i com es comprova la resolució DNS local amb l'eina dig?",
+        options: [
+          "Indiquen que no es reenviïn noms simples sense punt de domini a servidors externs i que el domini /gax.org/ es resolgui només localment; es comprova amb 'dig router.gax.org @localhost'.",
+          "Obliguen a utilitzar BIND9 com a servidor primari i es comprova amb 'dig -x /etc/hosts'.",
+          "Desactiven el servei DNS deixant només el DHCP actiu.",
+          "Creen un certificat SSL per al domini gax.org."
+        ],
+        answer: 0,
+        explanation: "A '/etc/dnsmasq.conf', 'domain-needed' evita reenviar consultes de noms plans sense domini cap a Internet, 'local=/gax.org/' indica que aquest domini és exclusivament local, i es verifica amb 'dig router.gax.org @localhost'."
+      },
+      {
+        id: 54,
+        block: 2,
+        blockName: "Bloc 2: Temes 1B & 1C",
+        isExam: false,
+        title: "Servidor DHCP (isc-dhcp-server) i Host Fix",
+        question: "En la configuració d'un servidor DHCP ('isc-dhcp-server'), quin fitxer defineix els rangs d'IPs i els temps de concessió (leases), com s'assigna sempre la mateixa IP a un equip sense configurar-lo manualment i com es depura el dimoni en primer pla?",
+        options: [
+          "Es configura a '/etc/dhcp/dhcpd.conf', s'assigna una IP fixa associant l'adreça MAC del client (hardware ethernet), i es depura amb '/usr/sbin/dhcpd -d -f'.",
+          "Es configura a '/etc/resolv.conf', s'assigna per nom d'usuari PAM i es depura amb 'dhclient --debug'.",
+          "Es configura a '/etc/network/interfaces' i no permet reservar IPs fixes.",
+          "Es configura a '/etc/exports' i es depura amb 'rpcinfo -p'."
+        ],
+        answer: 0,
+        explanation: "El servidor 'isc-dhcp-server' es configura a '/etc/dhcp/dhcpd.conf' (amb leases, rangs i blocs host amb la MAC del client per donar IP fixa) i es pot executar en mode debug en primer pla amb '/usr/sbin/dhcpd -d -f'."
+      },
+      {
+        id: 55,
+        block: 2,
+        blockName: "Bloc 2: Temes 1B & 1C",
+        isExam: false,
+        title: "Autenticació SSH amb Claus Públiques/Privades (PKI)",
+        question: "Quin parell d'ordres permet generar una parella de claus criptogràfiques (RSA o DSA) en el client i copiar automàticament la clau pública cap al servidor remot per autenticar-se sense contrasenya?",
+        options: [
+          "'ssh-keygen -t rsa' (o dsa) seguit de 'ssh-copy-id usuari@maquina'.",
+          "'make-ssl-cert' seguit de 'scp /etc/passwd usuari@maquina'.",
+          "'htpasswd -c .ssh' seguit de 'ssh -D usuari@maquina'.",
+          "'wpa_passphrase' seguit de 'ssh-add --remote'."
+        ],
+        answer: 0,
+        explanation: "'ssh-keygen -t rsa|dsa' genera la clau privada i pública de l'usuari, i 'ssh-copy-id usuari@maquina' afegeix la clau pública a '~/.ssh/authorized_keys' de la màquina remota."
+      },
+      {
+        id: 56,
+        block: 2,
+        blockName: "Bloc 2: Temes 1B & 1C",
+        isExam: false,
+        title: "Xinetd i Fitxers de Seguretat Associats",
+        question: "Per què no es recomana executar SSH sota el super-daemon xinetd i per a què serveixen els fitxers '/etc/ftpusers' i '/etc/securetty'?",
+        options: [
+          "Perquè SSH ja té el seu propi dimoni independent optimitzat i xinetd afegiria sobrecàrrega en la generació de sessions; '/etc/ftpusers' llista els usuaris amb accés FTP denegat i '/etc/securetty' defineix les terminals segures on es permet el login de root.",
+          "Perquè xinetd no suporta el protocol TCP; '/etc/ftpusers' conté les contrasenyes FTP en text pla.",
+          "Perquè SSH funciona per UDP; '/etc/securetty' configura els certificats SSL d'Apache.",
+          "És obligatori executar SSH dins de xinetd en totes les distribucions Debian."
+        ],
+        answer: 0,
+        explanation: "SSH és més eficient com a dimoni autònom ('sshd'). Dins dels arxius de seguretat del Tema 1B/1C, '/etc/ftpusers' especifica quins usuaris tenen prohibit l'accés per FTP (com root) i '/etc/securetty' indica des de quines consoles pot entrar root."
+      },
+      {
+        id: 57,
+        block: 2,
+        blockName: "Bloc 2: Temes 1B & 1C",
+        isExam: false,
+        title: "Arquitectura RPC de NFS i Opcions d'Exportació",
+        question: "El servei NFS es basa en crides a procediments remots (RPC). Quina ordre permet llistar els serveis RPC registrats al portmapper, quin arxiu defineix el domini d'identitats NFSv4 i què fa l'opció 'all_squash' a /etc/exports?",
+        options: [
+          "'rpcinfo -p' llista els serveis RPC, '/etc/idmapd.conf' defineix el domini (ex. domain = gax.org), i 'all_squash' mapeja totes les peticions de qualsevol usuari client a l'usuari anònim (nobody).",
+          "'ss -rpc' llista els serveis, '/etc/resolv.conf' defineix l'idmap i 'all_squash' comprimeix els fitxers amb gzip.",
+          "'nfsstat -l', '/etc/fstab' i 'all_squash' dóna permisos de root a tots els usuaris.",
+          "NFS no utilitza RPC sinó el protocol SMB sobre NetBIOS."
+        ],
+        answer: 0,
+        explanation: "NFS utilitza RPC (consultable amb 'rpcinfo -p' i definit a '/etc/rpc'), configura el mapeig de domini a '/etc/idmapd.conf' i l'ACL 'all_squash' força que qualsevol UID/GID remot es tracti com a usuari anònim."
+      },
+      {
+        id: 58,
+        block: 2,
+        blockName: "Bloc 2: Temes 1B & 1C",
+        isExam: false,
+        title: "Tecnologies DAS: AHCI vs NVMe i Interfícies",
+        question: "Dins de l'emmagatzematge de connexió directa (DAS), quina diferència hi ha entre els protocols AHCI i NVMe i quins factors de forma o busos utilitzen els SSD moderns?",
+        options: [
+          "AHCI va ser dissenyat per a discos mecànics SATA amb major latència, mentre que NVMe aprofita el bus PCIe d'alta velocitat i alt paral·lelisme amb connectors com M.2 i U.2.",
+          "NVMe és un protocol de xarxa per a fibra òptica WAN i AHCI és un sistema de fitxers distribuït.",
+          "AHCI és exclusiu per a memòries RAM i NVMe només funciona per port USB 2.0.",
+          "Els discos DAS requereixen obligatòriament un servidor DHCP Relay per funcionar."
+        ],
+        answer: 0,
+        explanation: "A l'apartat d'emmagatzematge DAS del Tema 1B/1C es destaquen les interfícies SATA, SCSI, SAS, PCIe, M.2 i U.2, diferenciant el protocol clàssic AHCI del protocol d'alt rendiment NVMe sobre PCIe."
+      },
+      {
+        id: 59,
+        block: 2,
+        blockName: "Bloc 2: Temes 1B & 1C",
+        isExam: false,
+        title: "Configuració de Samba (SMB/CIFS)",
+        question: "En la compartició de fitxers amb clients Windows mitjançant Samba ('/etc/samba/smb.conf'), quina directiva permet l'accés públic sense contrasenya i quina ordre s'utilitza per donar d'alta la contrasenya Samba d'un usuari per a recursos autenticats?",
+        options: [
+          "'guest ok = yes' permet l'accés convidat públic, i 'smbpasswd -a nom_usuari' afegeix i defineix la contrasenya de l'usuari a Samba.",
+          "'public_root = true' i l'ordre 'htpasswd -c /etc/samba/users'.",
+          "'no_root_squash' i l'ordre 'passwd --samba'.",
+          "'Allow from all' i l'ordre 'pwauth'."
+        ],
+        answer: 0,
+        explanation: "A '/etc/samba/smb.conf', 'guest ok = yes' habilita l'accés anònim/convidat a un recurs compartit, mentre que per a comparticions amb autenticació ('valid users = @security') s'utilitza 'smbpasswd -a usuari'."
+      },
+      {
+        id: 60,
+        block: 2,
+        blockName: "Bloc 2: Temes 1B & 1C",
+        isExam: false,
+        title: "Cloud Storage (ownCloud) i Protocols de CDN",
+        question: "Quina plataforma de codi obert vista al temari permet muntar un servidor privat de sincronització i compartició d'arxius al núvol basat en WebDAV i desplegable amb Docker, i quins protocols/estàndards s'associen a l'adaptació de contingut en CDNs?",
+        options: [
+          "ownCloud com a servidor Cloud Storage privat, i protocols com ICAP i OPES (juntament amb Apache Traffic Server o Cloudflare) en l'àmbit de CDN.",
+          "GlusterFS com a navegador web i RIP/OSPF com a protocols d'adaptació HTTP.",
+          "Xinetd Cloud i el protocol NetBIOS.",
+          "Bind9 Storage i el protocol SMTP."
+        ],
+        answer: 0,
+        explanation: "Al bloc 14 del Tema 1B/1C es presenta 'ownCloud' (basat en WebDAV, API extensible i Docker) i, dins de les arquitectures CDN, els protocols ICAP i OPES i programari com Apache Traffic Server."
+      },
+
+      // =========================================================================
+      // BLOC 3: TEMA 1D — Virtualització, cgroups, Docker, Swarm i LXD (61-90)
+      // =========================================================================
+      {
+        id: 61,
+        block: 3,
+        blockName: "Bloc 3: Tema 1D",
+        isExam: true,
+        title: "Classificació Completa d'Hipervisors (Tipus 1 vs Tipus 2)",
+        question: "Indicar de quin tipus són els següents hipervisors segons la classificació de l'examen:\n• VMware ESXi, KVM i Xen\n• VirtualBox, VMware Workstation i Parallels (MacOS)",
+        options: [
+          "VMware ESXi, KVM i Xen són de Tipus I (Bare-metal / Natius); VirtualBox, VMware Workstation i Parallels són de Tipus II (Hosted).",
+          "VMware ESXi i VirtualBox són de Tipus I; KVM, Xen i Parallels són de Tipus II.",
+          "KVM i VirtualBox són de Tipus 0; la resta són de Tipus 3.",
+          "Tots són de Tipus II excepte VMware ESXi."
+        ],
+        answer: 0,
+        explanation: "Pregunta directa d'examen oficial: ESXi, KVM, Xen (i Hyper-V) s'executen directament al nivell del hardware/kernel (Tipus I), mentre que VirtualBox, VMware Workstation i Parallels s'executen com a aplicacions sobre un SO amfitrió (Tipus II)."
+      },
+      {
+        id: 62,
+        block: 3,
+        blockName: "Bloc 3: Tema 1D",
+        isExam: false,
+        title: "Paravirtualització vs Virtualització Completa",
+        question: "La paravirtualització es distingeix de la virtualització completa pel fet que requereix que el sistema operatiu convidat (guest) sigui modificat per executar-se en dominis aïllats i comunicar-se directament amb l'hipervisor.",
+        options: ["Verdader", "Fals"],
+        answer: 0,
+        explanation: "Verdader. En la virtualització completa se simula el maquinari real perquè el SO convidat funcioni sense modificacions; en la paravirtualització cal modificar el SO convidat per millorar el rendiment."
+      },
+      {
+        id: 63,
+        block: 3,
+        blockName: "Bloc 3: Tema 1D",
+        isExam: true,
+        title: "Extensions de Maquinari VT-x i AMD-V",
+        question: "VT-x o AMD-V és una característica del processador que permet disposar d'extensió HW per millorar l'accés i ús d'aquest (com són permisos a instruccions privilegiades) a les màquines virtuals que s'executin sobre el sistema operatiu host.",
+        options: ["Verdader", "Fals"],
+        answer: 0,
+        explanation: "Verdader. Pregunta literal d'examen oficial."
+      },
+      {
+        id: 64,
+        block: 3,
+        blockName: "Bloc 3: Tema 1D",
+        isExam: false,
+        title: "Verificació de Virtualització a la CPU (Intel vs AMD)",
+        question: "Quines ordres de terminal permeten verificar a Linux si el processador suporta virtualització per maquinari en equips Intel, en equips AMD o mitjançant la utilitat de KVM respectivament?",
+        options: [
+          "'grep vmx /proc/cpuinfo' (Intel), 'grep svm /proc/cpuinfo' (AMD) i 'kvm-ok'.",
+          "'grep amd /proc/cpuinfo' (Intel), 'grep vtx /proc/cpuinfo' (AMD) i 'docker-ok'.",
+          "'lscpu --vt' i 'sysctl vm.hypervisor'.",
+          "'cat /dev/kvm' i 'udevadm info /proc/cpu'."
+        ],
+        answer: 0,
+        explanation: "El flag de virtualització d'Intel a /proc/cpuinfo és 'vmx', el d'AMD és 'svm' (Secure Virtual Machine) i l'eina de comprovació ràpida és 'kvm-ok'."
+      },
+      {
+        id: 65,
+        block: 3,
+        blockName: "Bloc 3: Tema 1D",
+        isExam: false,
+        title: "Control de Recursos amb cgroups",
+        question: "Quina característica del nucli Linux permet limitar, comptabilitzar i aïllar l'ús de recursos físics (CPU, memòria RAM, E/S de disc, xarxa i dispositius) d'una col·lecció de processos organitzats en grups jeràrquics?",
+        options: ["namespaces", "cgroups (Control Groups)", "SELinux", "udevadm"],
+        answer: 1,
+        explanation: "Els 'cgroups' limiten i comptabilitzen el consum de recursos físics (CPU, RAM, I/O), i són la base tant de systemd com de Docker, LXC/LXD i Kubernetes."
+      },
+      {
+        id: 66,
+        block: 3,
+        blockName: "Bloc 3: Tema 1D",
+        isExam: false,
+        title: "Ordres Pràctiques de cgroups",
+        question: "Quina ordre mostra en temps real el consum de recursos per grup de control (similar a top) i quina ordre mostra la jerarquia completa dels cgroups en forma d'arbre?",
+        options: [
+          "'systemd-cgtop' per al consum en temps real i 'systemd-cgls' per a l'arbre jeràrquic.",
+          "'docker stats' i 'pstree --cgroups'.",
+          "'iostat -c' i 'lsmod'.",
+          "' journalctl -cg' i 'top -g'."
+        ],
+        answer: 0,
+        explanation: "Al Tema 1D s'especifiquen les ordres 'systemd-cgtop', 'systemd-cgls', 'cat /proc/cgroups' i 'cat /proc/$$/cgroup'."
+      },
+      {
+        id: 67,
+        block: 3,
+        blockName: "Bloc 3: Tema 1D",
+        isExam: false,
+        title: "Imatges i Contenidors a Docker",
+        question: "En Docker, les imatges són plantilles de només lectura amb l'aplicació i les seves dependències, mentre que els contenidors són instàncies en execució d'imatges amb una capa escrivible.",
+        options: ["Verdader", "Fals"],
+        answer: 0,
+        explanation: "Verdader. Definició exacta del Tema 1D (apartat 3: Docker)."
+      },
+      {
+        id: 68,
+        block: 3,
+        blockName: "Bloc 3: Tema 1D",
+        isExam: true,
+        title: "Trampa d'Examen: Execució de docker run sense -d",
+        question: "Considerant que es disposa d'un contenidor amb el web server Nginx instal·lat, després d'executar:\ndocker run -p 80:80 nginx\nEs podrà executar en el mateix terminal l'ordre 'docker ps' per veure info sobre el contenidor i obrint el navegador sobre el host a l'URL http://localhost es veurà la pàgina per defecte de Nginx.",
+        options: ["Verdader", "Fals"],
+        answer: 1,
+        explanation: "Fals. Pregunta literal d'examen oficial: Com que NO s'ha posat el paràmetre '-d' (detached/segon pla), el procés nginx bloqueja aquesta terminal en primer pla i NO es podrà escriure 'docker ps' en el mateix terminal."
+      },
+      {
+        id: 69,
+        block: 3,
+        blockName: "Bloc 3: Tema 1D",
+        isExam: true,
+        title: "Definició de Dockerfile i docker build",
+        question: "Amb un arxiu anomenat Dockerfile es pot definir el que es farà dins del nou contenidor a crear: per exemple copiar fitxers des de fora a dintre, executar la instal·lació de software quan es construeixi o executar una ordre quan es posi en marxa. Després es pot fer servir l'ordre 'docker build -t myCT .' per a crear-lo basat en aquesta definició.",
+        options: ["Verdader", "Fals"],
+        answer: 0,
+        explanation: "Verdader. Pregunta literal d'examen oficial (tot i que tècnicament 'docker build' crea la imatge base per al contenidor, en la plantilla oficial d'examen del professor la resposta correcta és Verdader)."
+      },
+      {
+        id: 70,
+        block: 3,
+        blockName: "Bloc 3: Tema 1D",
+        isExam: false,
+        title: "Xarxa Host a Docker",
+        question: "En Docker, quin tipus de xarxa elimina l'aïllament de xarxa entre el contenidor i el sistema amfitrió per oferir el màxim rendiment?",
+        options: ["bridge", "overlay", "host", "macvlan"],
+        answer: 2,
+        explanation: "La xarxa 'host' elimina l'aïllament de xarxa compartint la pila TCP/IP directament amb el host. 'bridge' és la xarxa aïllada per defecte."
+      },
+      {
+        id: 71,
+        block: 3,
+        blockName: "Bloc 3: Tema 1D",
+        isExam: false,
+        title: "Docker Compose",
+        question: "Quina eina permet definir i executar aplicacions Docker multi-contenidor (serveis, xarxes i volums) mitjançant un sol fitxer YAML ('docker-compose.yml')?",
+        options: ["Docker Compose", "LXD init", "systemd-nspawn", "Docker Registry"],
+        answer: 0,
+        explanation: "Docker Compose gestiona tota la pila d'aplicacions multi-contenidor des d'un únic fitxer YAML amb ordres com 'docker compose up'."
+      },
+      {
+        id: 72,
+        block: 3,
+        blockName: "Bloc 3: Tema 1D",
+        isExam: false,
+        title: "Nodes Gestors i Treballadors a Docker Swarm",
+        question: "En un clúster de Docker Swarm, quina és la diferència entre els nodes gestors (managers) i els nodes treballadors (workers)?",
+        options: [
+          "Els nodes gestors controlen el swarm, mantenen l'estat desitjat i orquestren tasques; els nodes treballadors executen les tasques (contenidors) assignades.",
+          "Els nodes treballadors prenen les decisions d'escalat i els gestors només guarden còpies de seguretat.",
+          "En Docker Swarm no existeixen nodes treballadors, tots són gestors.",
+          "Els nodes gestors han d'executar Windows i els treballadors Linux."
+        ],
+        answer: 0,
+        explanation: "Segons l'apartat 6 del Tema 1D, els nodes gestors controlen el swarm i orquestren tasques, mentre que els treballadors executen les tasques assignades."
+      },
+      {
+        id: 73,
+        block: 3,
+        blockName: "Bloc 3: Tema 1D",
+        isExam: false,
+        title: "LXD vs Docker",
+        question: "Quina és la diferència principal d'enfocament entre LXD i Docker?",
+        options: [
+          "LXD està pensat per a contenidors de sistema complets (amb Systemd, oferint una experiència similar a una màquina virtual), mentre que Docker està pensat per a contenidors d'aplicacions i microserveis.",
+          "Docker executa un kernel propi a cada contenidor i LXD no.",
+          "LXD només serveix per a bases de dades i Docker només per a servidors web.",
+          "No hi ha cap diferència, LXD és el nou nom comercial de Docker."
+        ],
+        answer: 0,
+        explanation: "LXD ofereix virtualització a nivell de sistema (contenidors amb Systemd complet o fins i tot MVs), mentre que Docker s'orienta a aplicacions i microserveis."
+      },
+      {
+        id: 74,
+        block: 3,
+        blockName: "Bloc 3: Tema 1D",
+        isExam: false,
+        title: "Snapshots i Restauració a LXD",
+        question: "Quin parell d'ordres de LXD permet crear una instantània (snapshot) d'un contenidor i restaurar-la posteriorment?",
+        options: [
+          "'lxc snapshot' i 'lxc restore'",
+          "'docker snapshot' i 'docker restore'",
+          "'lxd-save' i 'lxd-load'",
+          "'systemctl snapshot' i 'systemctl isolate'"
+        ],
+        answer: 0,
+        explanation: "A LXD les instantànies es creen amb 'lxc snapshot' i es restauren amb 'lxc restore'."
+      },
+      {
+        id: 75,
+        block: 3,
+        blockName: "Bloc 3: Tema 1D",
+        isExam: false,
+        title: "Màquines Virtuals amb LXD",
+        question: "Quina ordre de LXD permet crear i iniciar una màquina virtual completa d'Ubuntu 24.04 en lloc d'un contenidor de sistema?",
+        options: [
+          "lxc launch ubuntu:24.04 ubuntu-vm --vm",
+          "lxc run --kvm ubuntu:24.04",
+          "lxd create vm ubuntu:24.04",
+          "docker launch ubuntu:24.04 --vm"
+        ],
+        answer: 0,
+        explanation: "L'ordre exacta del guió del Tema 1D és 'lxc launch ubuntu:24.04 ubuntu-vm --vm'."
+      },
+      {
+        id: 76,
+        block: 3,
+        blockName: "Bloc 3: Tema 1D",
+        isExam: true,
+        title: "Trampa d'Examen: Capes de Docker i Sistema AFS",
+        question: "En Docker els contenidors són fets per l'agregació de diferents capes (layers) de només lectura via un sistema d'arxiu AFS i un Devicemapper.",
+        options: ["Verdader", "Fals"],
+        answer: 1,
+        explanation: "Fals. Pregunta d'examen oficial: En primer lloc, els contenidors afegeixen una capa superior d'escriptura (les que són només de lectura són les imatges); en segon lloc, Docker utilitza sistemes UnionFS com AUFS o OverlayFS, no pas AFS (Andrew File System)."
+      },
+      {
+        id: 77,
+        block: 3,
+        blockName: "Bloc 3: Tema 1D",
+        isExam: false,
+        title: "Consulta del cgroup del Procés Actual i Versions",
+        question: "Quina ordre de consola permet veure a quin grup de control (cgroup) pertany el procés actual de la shell que s'està executant, i quina evolució important han tingut els cgroups al nucli Linux?",
+        options: [
+          "'cat /proc/$$/cgroup' mostra el cgroup de la shell actual (on $$ és el PID de la shell), i han evolucionat de cgroups v1 a cgroups v2 (amb jerarquia unificada).",
+          "'cat /dev/cgroup/self' i han estat substituïts per devfsd.",
+          "'ps --cgroup-version' i només funcionen en processadors de 32 bits.",
+          "'udevadm info --cgroup' i no són compatibles amb Kubernetes."
+        ],
+        answer: 0,
+        explanation: "Al Tema 1D s'indica explícitament l'ordre 'cat /proc/$$/cgroup' per consultar el cgroup del procés actual i la importància de diferenciar entre cgroups v1 i cgroups v2."
+      },
+      {
+        id: 78,
+        block: 3,
+        blockName: "Bloc 3: Tema 1D",
+        isExam: false,
+        title: "Ecosistema de Contenidors i Tecnologies d'Aïllament",
+        question: "Segons el Tema 1D, quines altres tecnologies d'aïllament i contenidors estan relacionades històricament o funcionalment amb l'ús de cgroups i l'aïllament de processos?",
+        options: [
+          "Podman, Kubernetes, zones de Solaris, OpenVZ, jails de FreeBSD i chroot.",
+          "RIP, OSPF, BGP i MPLS.",
+          "EXT2, FAT32, NTFS i HFS+.",
+          "SARG, Calamaris i Squidview."
+        ],
+        answer: 0,
+        explanation: "Al punt 2 del Tema 1D s'enumeren explícitament Docker, Podman, Kubernetes, zones Solaris, OpenVZ, jails FreeBSD i chroot com a tecnologies d'aïllament relacionades."
+      },
+      {
+        id: 79,
+        block: 3,
+        blockName: "Bloc 3: Tema 1D",
+        isExam: false,
+        title: "Arquitectura de Docker i Ordres Essencials",
+        question: "Quins són els components principals de l'arquitectura de Docker i quina diferència hi ha entre 'docker exec' i 'docker inspect'?",
+        options: [
+          "Els components són Docker Client, Docker Daemon, Images, Containers i Registry; 'docker exec' executa una ordre dins d'un contenidor en marxa i 'docker inspect' retorna tota la configuració detallada (IP, volums, capes) en format JSON.",
+          "Els components són Kernel, BIOS i GRUB; 'docker exec' crea una imatge i 'docker inspect' esborra contenidors aturats.",
+          "Docker no té cap dimoni en segon pla i 'docker inspect' obre una consola bash interactiva.",
+          "'docker exec' descarrega imatges de Docker Hub i 'docker inspect' les puja."
+        ],
+        answer: 0,
+        explanation: "L'arquitectura es compon de Client, Daemon, Images, Containers i Hub/Registry. 'docker exec' llança processos dins d'un contenidor actiu i 'docker inspect' mostra els detalls de baix nivell."
+      },
+      {
+        id: 80,
+        block: 3,
+        blockName: "Bloc 3: Tema 1D",
+        isExam: false,
+        title: "Publicació de Ports a Docker: -p vs -P",
+        question: "Quan s'executa un contenidor amb 'docker run', quina diferència hi ha entre publicar ports amb el paràmetre '-p' (minúscula) i amb el paràmetre '-P' (majúscula)?",
+        options: [
+          "'-p' permet especificar manualment el mapeig de port host:contenidor (ex. -p 8080:80), mentre que '-P' publica automàticament tots els ports exposats del contenidor cap a ports aleatoris disponibles del host.",
+          "'-p' és per a ports TCP i '-P' és exclusivament per a ports UDP.",
+          "'-p' obre el port només a localhost i '-P' el tanca al firewall.",
+          "No hi ha cap diferència ja que la consola de Linux no distingeix majúscules de minúscules."
+        ],
+        answer: 0,
+        explanation: "Segons l'apartat 4 del Tema 1D: '-p' mapeja un port específic elegit per l'usuari i '-P' assigna un port efímer aleatori del host als ports definits a la imatge."
+      },
+      {
+        id: 81,
+        block: 3,
+        blockName: "Bloc 3: Tema 1D",
+        isExam: false,
+        title: "Tipus de Xarxa a Docker: overlay, macvlan i none",
+        question: "En la gestió de xarxes de contenidors Docker, per a quin escenari s'utilitzen respectivament les xarxes 'overlay', 'macvlan' i 'none'?",
+        options: [
+          "'overlay' connecta contenidors ubicats en múltiples hosts Docker diferents (com a Docker Swarm); 'macvlan' assigna una adreça MAC física al contenidor perquè aparegui com un dispositiu físic a la LAN; 'none' deshabilita totes les interfícies de xarxa externes del contenidor.",
+          "'overlay' desactiva la xarxa; 'macvlan' és exclusiva per a ordinadors Apple Mac; 'none' comparteix la IP del host.",
+          "Totes tres són sinònims de la xarxa per defecte 'bridge'.",
+          "'overlay' serveix per muntar discos NFS i 'macvlan' per filtrar URLs."
+        ],
+        answer: 0,
+        explanation: "Definició exacta dels 5 tipus de xarxa del Tema 1D: bridge (per defecte, aïllats en un host), host (sense aïllament), overlay (multi-host per a Swarm), macvlan (assigna MAC física) i none (deshabilita interfícies)."
+      },
+      {
+        id: 82,
+        block: 3,
+        blockName: "Bloc 3: Tema 1D",
+        isExam: false,
+        title: "Comunicació per Nom DNS entre Contenidors Docker",
+        question: "Com es poden gestionar les xarxes a Docker i com es comuniquen dos contenidors pel seu nom (resolució DNS interna) en lloc d'utilitzar les seves adreces IP privades?",
+        options: [
+          "Creant una xarxa definida per l'usuari amb 'docker network create' i connectant-hi els contenidors ('docker network connect' o '--network'), on el servidor DNS integrat de Docker resol automàticament el nom del contenidor (o bé amb les opcions '--link' / '--dns').",
+          "No és possible comunicar contenidors pel nom si no s'instal·la BIND9 dins de cada contenidor.",
+          "Mitjançant la xarxa 'none' que activa el DNS global.",
+          "Executant 'docker image ls --dns'."
+        ],
+        answer: 0,
+        explanation: "A l'apartat 4 del Tema 1D es detallen les ordres 'docker network ls', 'docker network create', 'docker network inspect', 'docker network connect' i la resolució pel nom de contenidor, '--link' i '--dns'."
+      },
+      {
+        id: 83,
+        block: 3,
+        blockName: "Bloc 3: Tema 1D",
+        isExam: false,
+        title: "Ordres i Escalat amb Docker Compose",
+        question: "En Docker Compose, quina ordre permet aixecar tots els serveis en segon pla, quina ordre permet augmentar el nombre d'instàncies d'un servei i quina atura i elimina els contenidors i xarxes creats?",
+        options: [
+          "'docker compose up -d' per iniciar en segon pla, 'docker compose up --scale' per escalar instàncies i 'docker compose down' per aturar i eliminar els recursos de la pila.",
+          "'docker compose start --bg', 'docker compose multiply' i 'docker compose kill'.",
+          "'docker swarm init', 'docker service scale' i 'docker rmi'.",
+          "'lxc launch', 'lxc scale' i 'lxc delete'."
+        ],
+        answer: 0,
+        explanation: "A l'apartat 5 del Tema 1D s'indiquen les ordres de Docker Compose: 'up' / 'up -d', 'down', 'logs', 'ps', 'exec', 'build' i 'up --scale'."
+      },
+      {
+        id: 84,
+        block: 3,
+        blockName: "Bloc 3: Tema 1D",
+        isExam: false,
+        title: "Model Declaratiu i Reconciliació d'Estat a Docker Swarm",
+        question: "Què significa que Docker Swarm utilitza un 'model de servei declaratiu' amb 'reconciliació d'estat desitjat'?",
+        options: [
+          "Que l'administrador defineix l'estat que vol (p.ex. 5 rèpliques actives d'un servei web) i, si un node cau i es perden contenidors, Swarm detecta la diferència i crea automàticament noves rèpliques en altres nodes sans per mantenir les 5 instàncies.",
+          "Que l'administrador ha d'escriure un script en C per comprovar cada 5 minuts si els contenidors segueixen vius.",
+          "Que els contenidors es reinicien cada mitjanit per alliberar memòria RAM.",
+          "Que no es permet actualitzar cap servei sense apagar tot el clúster abans."
+        ],
+        answer: 0,
+        explanation: "En el model declaratiu de Swarm defines l'estat desitjat del servei i el gestor d'orquestració vetlla contínuament (reconciliació) perquè l'estat real coincideixi amb el desitjat."
+      },
+      {
+        id: 85,
+        block: 3,
+        blockName: "Bloc 3: Tema 1D",
+        isExam: false,
+        title: "Ordres d'Administració de Docker Swarm",
+        question: "Quina ordre inicialitza un clúster Docker Swarm en el primer node gestor, quina permet desplegar una pila completa d'aplicació al clúster i quina permet escalar les rèpliques d'un servei en execució?",
+        options: [
+          "'docker swarm init' per inicialitzar el clúster, 'docker stack deploy' per desplegar una pila i 'docker service scale' per escalar el servei.",
+          "'docker compose init', 'docker compose deploy' i 'docker compose scale-swarm'.",
+          "'swarmctl start', 'swarmctl apply' i 'swarmctl resize'.",
+          "'lxd init --swarm', 'lxc deploy' i 'lxc scale'."
+        ],
+        answer: 0,
+        explanation: "Segons l'apartat 6 del Tema 1D, les ordres de Swarm són 'docker swarm init', 'docker swarm join', 'docker service create/ls/scale/inspect/update/rm', 'docker node update' i 'docker stack deploy'."
+      },
+      {
+        id: 86,
+        block: 3,
+        blockName: "Bloc 3: Tema 1D",
+        isExam: false,
+        title: "Instal·lació i Inicialització de LXD",
+        question: "Segons el Tema 1D, com s'instal·la i es configura inicialment l'entorn LXD en un sistema Ubuntu/Debian i quin requisit d'usuari cal per gestionar-lo sense sudo?",
+        options: [
+          "S'instal·la amb 'snap install lxd', s'inicialitza de forma interactiva amb 'lxd init' (configurant storage, bridge de xarxa, etc.) i s'afegeix l'usuari al grup 'lxd'.",
+          "Ve preinstal·lat dins del paquet apache2 i s'inicia amb 'a2enmod lxd'.",
+          "S'instal·la amb 'pip install lxd' i requereix desactivar systemd del host.",
+          "S'instal·la amb 'docker pull lxd' i només l'usuari nobody pot executar-lo."
+        ],
+        answer: 0,
+        explanation: "A l'apartat 7 del Tema 1D s'indica explícitament: 'snap install lxd', 'lxd init' i afegir l'usuari al grup 'lxd'."
+      },
+      {
+        id: 87,
+        block: 3,
+        blockName: "Bloc 3: Tema 1D",
+        isExam: false,
+        title: "Transferència d'Arxius i Configuració de Recursos a LXD",
+        question: "Quina ordre de LXC/LXD s'utilitza per aplicar límits de recursos (com memòria o CPU) a un contenidor i quina permet copiar fitxers entre el host i el contenidor LXD?",
+        options: [
+          "'lxc config set' per configurar límits de recursos i 'lxc file pull' / 'lxc file push' per transferir fitxers.",
+          "'lxc cgroup limit' i 'scp --lxc'.",
+          "'lxd set-ram' i 'docker cp'.",
+          "'sysctl -lxc' i 'mount -t lxd'."
+        ],
+        answer: 0,
+        explanation: "A l'apartat 7 del Tema 1D es detallen les ordres 'lxc config set', 'lxc snapshot', 'lxc restore', 'lxc network create' i 'lxc file pull/push'."
+      },
+      {
+        id: 88,
+        block: 3,
+        blockName: "Bloc 3: Tema 1D",
+        isExam: false,
+        title: "Relació entre LXC, LXD i el Nucli Linux",
+        question: "Quina relació hi ha entre els contenidors LXC/LXD i el sistema operatiu amfitrió (host) en comparació amb una màquina virtual tradicional?",
+        options: [
+          "Els contenidors de sistema LXC/LXD comparteixen el mateix nucli (kernel) Linux del host utilitzant cgroups i namespaces per a l'aïllament, la qual cosa redueix dràsticament el consum de recursos respecte a una MV, tot mantenint un espai d'usuari complet amb systemd.",
+          "Cada contenidor LXD arrenca un kernel de Windows Server independent.",
+          "Els contenidors LXD ofereixen un aïllament per maquinari més fort que un hipervisor de Tipus 1.",
+          "LXD no pot executar serveis en segon pla ni dimonis del sistema."
+        ],
+        answer: 0,
+        explanation: "Tant Docker com LXC/LXD són tecnologies de contenidors que comparteixen el kernel del host (a diferència de les MVs que virtualitzen un kernel independent), però LXD aixeca un sistema operatiu complet a nivell d'espai d'usuari amb systemd."
+      },
+      {
+        id: 89,
+        block: 3,
+        blockName: "Bloc 3: Tema 1D",
+        isExam: false,
+        title: "Dependències entre Serveis a Docker Compose",
+        question: "En un fitxer 'docker-compose.yml' amb una aplicació web i una base de dades Postgres, com es controla l'ordre d'inici dels contenidors i es verifica que un servei estigui realment llest per acceptar connexions?",
+        options: [
+          "Mitjançant la directiva 'depends_on' combinada amb 'healthchecks' (comprovacions de salut del servei).",
+          "Ordenant alfabèticament els noms dels contenidors dins del fitxer YAML.",
+          "Afegint una regla 'ProxyPassReverse' dins del Dockerfile.",
+          "Docker Compose sempre inicia tots els contenidors de forma seqüencial esperant 5 minuts entre cadascun."
+        ],
+        answer: 0,
+        explanation: "Al punt 5 del Tema 1D s'esmenta específicament la gestió de dependències entre serveis mitjançant 'depends_on' i 'healthchecks'."
+      },
+      {
+        id: 90,
+        block: 3,
+        blockName: "Bloc 3: Tema 1D",
+        isExam: false,
+        title: "Comparativa Transversal: Docker Compose vs Swarm vs Kubernetes",
+        question: "Si comparem Docker Compose, Docker Swarm i Kubernetes dins de l'ecosistema de contenidors, quina afirmació és més precisa?",
+        options: [
+          "Docker Compose orquestra aplicacions multi-contenidor en un sol host; Docker Swarm és l'orquestrador de clústers multi-host natiu i senzill integrat a Docker; i Kubernetes és la plataforma d'orquestració de clústers a gran escala més avançada i estandarditzada del mercat.",
+          "Docker Compose és per a clústers de 1000 servidors i Kubernetes només funciona en un ordinador portàtil local.",
+          "Docker Swarm no suporta xarxes overlay ni equilibri de càrrega.",
+          "Kubernetes és un hipervisor de Tipus 1 que substitueix VMware ESXi."
+        ],
+        answer: 0,
+        explanation: "Síntesi transversal del Tema 1D: Compose opera en un sol amfitrió, mentre que Swarm (natiu i lleuger) i Kubernetes (estàndard empresarial complex) gestionen clústers multi-amfitrió amb alta disponibilitat i escalat."
+      },
+
+      // =========================================================================
+      // BLOC 4: PROXIES — SOCKS, Apache2 i Squid (91-120)
+      // =========================================================================
+      {
+        id: 91,
+        block: 4,
+        blockName: "Bloc 4: Proxies",
+        isExam: true,
+        title: "Trampa d'Examen: Proxy (Layer 7) vs NAT (Layer 3)",
+        question: "Amb un Proxy puc tenir les mateixes funcionalitats que amb un NAT excepte que un és a Layer 7 i l'altre a Layer 3.",
+        options: ["Verdader", "Fals"],
+        answer: 1,
+        explanation: "Fals. Pregunta literal d'examen oficial: Un Proxy a Capa 7 i un NAT a Capa 3 NO tenen les mateixes funcionalitats. El NAT només veu paquets individuals (menys recursos però menys flexible), mentre que el Proxy llegeix la trama d'aplicació sencera, podent fer caching, autenticació, filtratge d'URLs i capturar injeccions."
+      },
+      {
+        id: 92,
+        block: 4,
+        blockName: "Bloc 4: Proxies",
+        isExam: true,
+        title: "Trampa d'Examen: Definició de Forward Proxy",
+        question: "Un proxy Forward és (generalment) un proxy utilitzat com a front-end (o per això la seva identificació com a forward) per controlar i protegir l'accés a una xarxa privada i realitzar tasques de load-balancing, authentication, decryption o caching.",
+        options: ["Verdader", "Fals"],
+        answer: 1,
+        explanation: "Fals. Pregunta literal d'examen oficial: Aquesta és la definició d'un REVERSE PROXY! El Forward Proxy se situa entre els clients interns i Internet per controlar la sortida dels clients."
+      },
+      {
+        id: 93,
+        block: 4,
+        blockName: "Bloc 4: Proxies",
+        isExam: false,
+        title: "Desavantatge del Forward Proxy (Punt Únic de Fallada)",
+        question: "Un desavantatge important d'un Forward Proxy centralitzat és que es converteix en un punt únic de fallada: si el proxy cau o s'atura (p.ex. systemctl stop apache2), els clients interns perden la connectivitat web cap a Internet.",
+        options: ["Verdader", "Fals"],
+        answer: 0,
+        explanation: "Verdader. Com que totes les comunicacions internes dels clients passen a través del Forward Proxy, si aquest s'atura es perd la navegació."
+      },
+      {
+        id: 94,
+        block: 4,
+        blockName: "Bloc 4: Proxies",
+        isExam: false,
+        title: "Nivells d'Anonimat: Transparent, Anònim i d'Elit",
+        question: "Segons la classificació dels proxies pel seu nivell d'anonimat, quina diferència hi ha entre un Proxy Transparent, un Proxy Anònim i un Proxy d'Elit?",
+        options: [
+          "El Transparent revela la IP real del client i no ofereix anonimat; l'Anònim amaga la IP del client però indica que s'està usant un proxy; i el d'Elit amaga tant la IP del client com l'ús del proxy.",
+          "El Transparent amaga tant la IP com l'ús del proxy, sent el més segur de tots.",
+          "El Proxy d'Elit envia sempre la capçalera X-Forwarded-For amb la IP pública i privada de l'usuari.",
+          "Tots els Open Proxies gratuïts d'Internet són Proxies d'Elit amb xifratge militar."
+        ],
+        answer: 0,
+        explanation: "Classificació exacta de la pàgina 4 del PDF de Proxies: Transparent (revela IP), Anònim/Semianònim (amaga IP però revela ús de proxy) i d'Elit (amaga IP i ús de proxy)."
+      },
+      {
+        id: 95,
+        block: 4,
+        blockName: "Bloc 4: Proxies",
+        isExam: true,
+        title: "Definició de Proxy SOCKS a l'Examen",
+        question: "Proxy Socks és (indicar la que més s'adeqüi):",
+        options: [
+          "Se l'anomena proxy però en realitat és un túnel per ssh on el paquet ssh simplement encapsula el paquet html.",
+          "És un protocol que permet a aplicacions client-servidor usar de manera transparent els serveis a través d'un tallafocs de xarxa. Els clients que hi ha darrere d'un tallafocs, els quals necessiten accedir als servidors de l'exterior, poden connectar-se a un servidor intermediari SOCKS i d'aquest al servei extern.",
+          "És un tipus de proxy que solament funciona amb el protocol HTTP en el port 80.",
+          "És equivalent a la creació d'una VPN IPsec de capa 2 amb interfície tap."
+        ],
+        answer: 1,
+        explanation: "Pregunta literal d'examen oficial: SOCKS (Socket Secure) és un protocol d'Internet que permet a aplicacions client-servidor utilitzar de manera transparent els serveis a través d'un tallafocs de xarxa."
+      },
+      {
+        id: 96,
+        block: 4,
+        blockName: "Bloc 4: Proxies",
+        isExam: false,
+        title: "Comparativa SOCKS4 vs SOCKS5",
+        question: "Quina millora fonamental incorpora SOCKS5 respecte a SOCKS4?",
+        options: [
+          "SOCKS4 suporta UDP i SOCKS5 només suporta TCP.",
+          "SOCKS5 suporta tant TCP com UDP, autenticació avançada i resolució DNS remota.",
+          "SOCKS5 xifra tot el trànsit per defecte sense necessitat d'utilitzar SSH ni HTTPS.",
+          "SOCKS4 fa anàlisi profunda del contingut HTML i SOCKS5 no."
+        ],
+        answer: 1,
+        explanation: "Segons la pàgina 6 del PDF de Proxies: SOCKS4 només suporta TCP i autenticació bàsica, mentre que SOCKS5 afegeix suport UDP, autenticació avançada i resolució DNS remota."
+      },
+      {
+        id: 97,
+        block: 4,
+        blockName: "Bloc 4: Proxies",
+        isExam: true,
+        title: "Configuració i Accés a un Proxy SOCKS amb SSH",
+        question: "Com es configura i accedeix a un proxy Socks? (seleccionar la que més s'adeqüi segons l'examen oficial):",
+        options: [
+          "ssh -N 4444 login@remote-server.org i configurant el client (p.e. Firefox) amb la IP local i el port 4444. No és necessari el -D en el ssh ja que el túnel es crea pel port 22.",
+          "ssh -ND 3498 login@remote-server.org i configurant el client (p.e. Firefox) amb la IP local (localhost / 127.0.0.1) i el port 3498.",
+          "ssh -ND 2222 login@remote-server.org i configurant el client (p.e. Firefox) amb la IP remota i el port 22 que és on espera el sshd.",
+          "ssh -L 9999 login@remote-server.org sense configurar res al navegador."
+        ],
+        answer: 1,
+        explanation: "Pregunta literal d'examen oficial: S'utilitza '-D <port>' (combinat amb '-N' com '-ND 3498') per obrir el port SOCKS dinàmic a la màquina local, i es configura el navegador apuntant a la IP local (127.0.0.1 / localhost) i al port 3498."
+      },
+      {
+        id: 98,
+        block: 4,
+        blockName: "Bloc 4: Proxies",
+        isExam: true,
+        title: "Afirmacions Correctes d'un Reverse Proxy a Apache2",
+        question: "En una implementació d'un proxy reverse (o invers) amb Apache2, quina combinació d'afirmacions és totalment correcta?",
+        options: [
+          "Tots els mòduls com mod_proxy estan habilitats per defecte en instal·lar Apache2 i cal posar ProxyRequests On.",
+          "Cal habilitar els mòduls (a2enmod proxy proxy_http proxy_html), establir 'ProxyRequests Off', usar 'ProxyPass' per mapar peticions cap al backend i 'ProxyPassReverse' per ajustar les capçaleres de redirecció (Location) i evitar el bypass del proxy.",
+          "Si no es posa ProxyPassReverse els clients mai experimentaran cap problema de redirecció.",
+          "ProxyPass s'utilitza només per a Forward Proxy i ProxyBlock per a Reverse Proxy."
+        ],
+        answer: 1,
+        explanation: "Pregunta d'examen oficial: En un Reverse Proxy cal activar els mòduls amb 'a2enmod', mantenir 'ProxyRequests Off', mapar amb 'ProxyPass' i reescriure capçaleres de redirecció amb 'ProxyPassReverse'."
+      },
+      {
+        id: 99,
+        block: 4,
+        blockName: "Bloc 4: Proxies",
+        isExam: false,
+        title: "Directiva ProxyPreserveHost On a Apache2",
+        question: "En la configuració d'un Reverse Proxy a Apache2, quina funció compleix la directiva 'ProxyPreserveHost On'?",
+        options: [
+          "Manté i reenvia la capçalera 'Host:' original sol·licitada pel client cap al servidor intern (backend), en lloc de substituir-la pel nom intern del backend.",
+          "Impedeix que el servidor Apache es reiniciï si hi ha un error de sintaxi.",
+          "Guarda en memòria cau totes les adreces IP del fitxer /etc/hosts.",
+          "Activa l'autenticació PAM per als usuaris del sistema operatiu."
+        ],
+        answer: 0,
+        explanation: "'ProxyPreserveHost On' fa que Apache mantingui la capçalera Host original de la petició quan la passa al backend, imprescindible quan el backend gestiona múltiples VirtualHosts per nom."
+      },
+      {
+        id: 100,
+        block: 4,
+        blockName: "Bloc 4: Proxies",
+        isExam: true,
+        title: "Interpretació de p.conf a Apache2 (ProxyRequests On)",
+        question: "La següent configuració anomenada p.conf en /etc/apache2/sites-enabled:\n\nProxyRequests On\n<Proxy *>\n  Require ip 192.168.0.0/24\n</Proxy>\n\nés per a un (considerar Apache v2.4 o superior):",
+        options: [
+          "Proxy forward però la regla de restricció està mal posada ja que es fa servir Deny all except 192.168.0.0/24.",
+          "Proxy forward restringit a clients amb IP 192.168.0.0/24.",
+          "Proxy reverse però la configuració és parcial i falten els ProxyPass.",
+          "Proxy reverse on els servidors interns per seguretat poden estar solament en 192.168.0.0/24."
+        ],
+        answer: 1,
+        explanation: "Pregunta literal d'examen oficial: 'ProxyRequests On' habilita un Forward Proxy, i '<Proxy *>' amb 'Require ip 192.168.0.0/24' (sintaxi d'Apache 2.4) restringeix l'accés als clients d'aquesta xarxa."
+      },
+      {
+        id: 101,
+        block: 4,
+        blockName: "Bloc 4: Proxies",
+        isExam: false,
+        title: "Exclusió amb '!' al Balancejador d'Apache2",
+        question: "En configurar un Reverse Balanced Proxy a Apache2, s'afegeix la línia 'ProxyPass /balancer-manager !' abans de 'ProxyPass / balancer://mycluster/'. Per a què serveix el símbol '!'?",
+        options: [
+          "Indica que la ruta '/balancer-manager' NO s'ha de reenviar als servidors del clúster backend, sinó que l'ha de servir localment el propi Apache per mostrar la pàgina de gestió del balancejador.",
+          "Dóna prioritat màxima a totes les peticions que vagin a /balancer-manager.",
+          "Bloqueja l'accés a la interfície d'administració per a tots els usuaris.",
+          "Esborra la memòria cau del balancejador en cada petició."
+        ],
+        answer: 0,
+        explanation: "A Apache2, el signe d'exclamació '!' en una directiva ProxyPass exclou aquella ruta o subdirectori de ser proxificat cap al backend."
+      },
+      {
+        id: 102,
+        block: 4,
+        blockName: "Bloc 4: Proxies",
+        isExam: false,
+        title: "Mòduls i Algoritmes del Reverse Balanced Proxy a Apache2",
+        question: "Quins mòduls s'activen amb 'a2enmod' per configurar un Reverse Balanced Proxy amb la seva interfície de gestió a Apache2, i quins són els 4 algoritmes de balanceig ('lbmethod') disponibles?",
+        options: [
+          "Mòduls: proxy_balancer, proxy_connect, status i els algoritmes: lbmethod_byrequests, lbmethod_bytraffic, lbmethod_bybusyness i lbmethod_heartbeat.",
+          "Mòduls: mod_squid, mod_nat i els algoritmes: round_robin, random, ip_hash i least_conn.",
+          "Mòduls: dav_fs, ssl i els algoritmes: bycpu, byram, bydisk i bynet.",
+          "Només existeix l'algoritme lbmethod_byrequests a Apache2."
+        ],
+        answer: 0,
+        explanation: "Segons les pàgines 9 i 10 del PDF de Proxies, s'habiliten 'proxy_balancer', 'proxy_connect', 'status' i els mètodes disponibles són 'lbmethod_byrequests', 'lbmethod_bytraffic', 'lbmethod_bybusyness' i 'lbmethod_heartbeat'."
+      },
+      {
+        id: 103,
+        block: 4,
+        blockName: "Bloc 4: Proxies",
+        isExam: true,
+        title: "Característiques de Squid Proxy a l'Examen",
+        question: "Squid és un servidor que permet implementar proxy forward i cache i que és molt popular i sota llicència GPL. (Seleccioneu la que més s'adeqüi segons l'examen oficial):",
+        options: [
+          "Verdader (només pot fer de proxy forward i cache).",
+          "Fals.",
+          "Verdader, però també pot actuar com a Proxy Reverse.",
+          "Fals, ja que per defecte no pot actuar com a Proxy Cache (s'han d'afegir plugins per a aquesta funcionalitat com en Apache2)."
+        ],
+        answer: 2,
+        explanation: "Pregunta literal d'examen oficial: La resposta més completa i correcta a l'examen és 'Verdader però també pot actuar com Proxy Reverse' (mode accelerador HTTP)."
+      },
+      {
+        id: 104,
+        block: 4,
+        blockName: "Bloc 4: Proxies",
+        isExam: false,
+        title: "Exclusió de Contingut Dinàmic a Squid",
+        question: "Al fitxer '/etc/squid/squid.conf', com s'exclou el contingut dinàmic (com scripts cgi-bin o URLs amb paràmetres '?') perquè no s'emmagatzemi a la caché?",
+        options: [
+          "acl contingut_dinamic urlpath_regex cgi-bin \\? seguit de: no_cache deny contingut_dinamic",
+          "http_access deny cgi-bin",
+          "refresh_pattern cgi-bin 0 0% 0",
+          "ProxyPass /cgi-bin !"
+        ],
+        answer: 0,
+        explanation: "A la pàgina 13 del PDF de Proxies es defineix l'ACL amb 'urlpath_regex cgi-bin \\?' i s'aplica 'no_cache deny contingut_dinamic'."
+      },
+      {
+        id: 105,
+        block: 4,
+        blockName: "Bloc 4: Proxies",
+        isExam: false,
+        title: "Monitorització i Anàlisi de Logs a Squid",
+        question: "Quines comandes de 'squidclient' permeten consultar la informació general i l'ús de memòria de Squid, i quines tres eines externes es destaquen al temari per analitzar i veure els logs de Squid?",
+        options: [
+          "'squidclient mgr:info' i 'squidclient mgr:mem'; i les eines són 'sarg' (genera informes de navegació), 'squidview' (interfície per veure logs) i 'calamaris' (analitza logs de Squid).",
+          "'squid -v' i 'squid -m'; i les eines són Wireshark, Nagios i Cacti.",
+          "'systemctl status squid'; i les eines són logrotate, journalctl i dmesg.",
+          "'apachectl status'; i les eines són cadaver, nautilus i pwauth."
+        ],
+        answer: 0,
+        explanation: "Segons la pàgina 13 del PDF de Proxies: 'squidclient mgr:info', 'squidclient mgr:mem', 'tail -f /var/log/squid/access.log' i les eines útils 'sarg', 'squidview' i 'calamaris'."
+      },
+      {
+        id: 106,
+        block: 4,
+        blockName: "Bloc 4: Proxies",
+        isExam: true,
+        title: "Open Proxy i Navegació Anònima",
+        question: "Un tipus especial de forward proxy és un open proxy el qual és accessible a qualsevol usuari a Internet. S'estima que hi ha centenars de milers d'open proxies a Internet ja que permeten amagar la seva IP quan naveguen per la web o usant altres serveis, si bé això no és garantia de navegació anònima.",
+        options: [
+          "Fals.",
+          "Veritat en quant a la definició però fals en quant a l'afirmació de l'anonimat.",
+          "Veritat.",
+          "Fals perquè un open proxy és un tipus de reverse proxy."
+        ],
+        answer: 2,
+        explanation: "Pregunta literal d'examen oficial: És totalment 'Veritat' (pàgina 4 del PDF de Proxies: tot i que amaguen la IP del client donant impressió d'anonimat, són inherentment insegurs, no xifren el trànsit, poden robar credencials o formar part de botnets)."
+      },
+      {
+        id: 107,
+        block: 4,
+        blockName: "Bloc 4: Proxies",
+        isExam: true,
+        title: "Funcions d'un Servidor Proxy a l'Examen",
+        question: "Segons les preguntes d'examen oficial, un servidor proxy serveix per a totes les funcions següents EXCEPTE:",
+        options: [
+          "Filtrat i Control/seguretat.",
+          "Privacitat i Anonimat.",
+          "Estalvi d'ample de banda / Velocitat (Cache).",
+          "Modificació off-line (redirecció) i Modificació on-line."
+        ],
+        answer: 3,
+        explanation: "Pregunta d'examen oficial: Les 5 opcions vàlides a l'examen són Filtrat, Privacitat, Control/seguretat, Anonimat i Estalvi/Velocitat. 'Modificació off-line (redirecció)' i 'Modificació on-line' són els distractors incorrectes."
+      },
+      {
+        id: 108,
+        block: 4,
+        blockName: "Bloc 4: Proxies",
+        isExam: true,
+        title: "Gateway o Tunneling Proxy",
+        question: "Quin tipus de proxy es coneix també com a 'gateway' o 'tunneling proxy'?",
+        options: [
+          "Proxy Reverse.",
+          "Proxy perimetral.",
+          "Proxy forward.",
+          "Proxy DNS."
+        ],
+        answer: 2,
+        explanation: "Pregunta d'examen oficial: El 'Proxy forward' (proxy directe que actua com a passarel·la de sortida per als clients cap a Internet) es coneix també com a gateway o tunneling proxy."
+      },
+      {
+        id: 109,
+        block: 4,
+        blockName: "Bloc 4: Proxies",
+        isExam: false,
+        title: "Transparent Firewall i Limitacions de Seguretat",
+        question: "Què és un 'Transparent Firewall' en combinació amb un proxy i davant de quins atacs NO protegeix un Firewall/Proxy encara que estigui perfectament configurat?",
+        options: [
+          "És una configuració on el Firewall en Layer 3 reenvia els paquets a un Proxy en Layer 7 per investigar-ne el contingut; i NO protegeix d'atacs fora de la seva àrea, ni d'espies o usuaris inconscients, ni d'enginyeria social, ni de dades copiades a un servidor intern i enviades des d'allà a l'exterior.",
+          "És un tallafocs que no té regles i protegeix al 100% contra l'enginyeria social i el phishing telefònic.",
+          "És un proxy que opera en la capa 1 física del model OSI.",
+          "És un sinònim d'Open Proxy públic."
+        ],
+        answer: 0,
+        explanation: "Explicat literalment a la pàgina 2 del PDF de Proxies (apartat 'Proxy vs. NAT')."
+      },
+      {
+        id: 110,
+        block: 4,
+        blockName: "Bloc 4: Proxies",
+        isExam: false,
+        title: "Desavantatges dels Proxies: Incoherència i HTTPS",
+        question: "Per què un servidor proxy pot provocar problemes d''incoherència' i d''inseguretat aparent' segons els apunts?",
+        options: [
+          "Incoherència perquè un proxy cache amb mecanismes de coherència mal configurats pot lliurar dades antigues; i inseguretat aparent perquè el proxy representa més d'un usuari i pot ser un problema en escenaris que pressuposen comunicació directa entre emissor i receptor (com certificats de domini HTTPS).",
+          "Perquè el proxy canvia l'idioma de les pàgines web automàticament.",
+          "Perquè el protocol HTTP no permet utilitzar adreces IPv4.",
+          "Perquè un proxy esborra els certificats de l'entitat certificadora del navegador."
+        ],
+        answer: 0,
+        explanation: "Detallat a la llista de '(Possibles) desavantatges' de la pàgina 2 del PDF de Proxies."
+      },
+      {
+        id: 111,
+        block: 4,
+        blockName: "Bloc 4: Proxies",
+        isExam: false,
+        title: "Configuració Avançada de SOCKS a Firefox (about:config)",
+        question: "Si configurem Firefox des d'about:config per utilitzar un túnel SOCKS5 creat amb 'ssh -D 9999', quins paràmetres cal ajustar i per a què serveix 'network.proxy.socks_remote_dns = true'?",
+        options: [
+          "Cal posar network.proxy.socks = 'localhost', network.proxy.socks_port = 9999, network.proxy.type = 1, i 'socks_remote_dns = true' obliga a resoldre les peticions DNS de forma remota a través del túnel SOCKS5.",
+          "Cal posar network.proxy.type = 0 i 'socks_remote_dns = true' desactiva el servidor DNS.",
+          "Cal posar la IP del servidor remot a network.proxy.socks i el port 22.",
+          "Firefox no suporta SOCKS5 sense instal·lar el mòdul mod_proxy."
+        ],
+        answer: 0,
+        explanation: "Pàgina 7 del PDF de Proxies: network.proxy.socks = 'localhost', socks_port = 9999, type = 1 (manual) i socks_remote_dns = true."
+      },
+      {
+        id: 112,
+        block: 4,
+        blockName: "Bloc 4: Proxies",
+        isExam: false,
+        title: "Forward Proxy a Apache2: Directiva ProxyBlock",
+        question: "En la configuració d'Apache2 com a Forward Proxy ('/etc/apache2/sites-available/proxyf.conf'), per a què serveix la directiva 'ProxyBlock \"www.site1.com\" \"www.site2.com\"' i què passa si es posa 'ProxyBlock *'?",
+        options: [
+          "Bloqueja l'accés HTTP cap a les paraules, hosts o dominis indicats ('www.site1.com' i 'www.site2.com'); i si es posa 'ProxyBlock *' es bloqueja l'accés a tots els llocs web.",
+          "Permet l'accés exclusivament a site1.com i site2.com bloquejant la resta.",
+          "Bloqueja les adreces IP dels clients interns que intentin connectar-se al proxy.",
+          "Activa el balanceig de càrrega entre site1.com i site2.com."
+        ],
+        answer: 0,
+        explanation: "Pàgina 10 del PDF de Proxies: 'ProxyBlock' filtra i impedeix la connexió als dominis llistats a través del Forward Proxy d'Apache2, i '*' bloqueja tot el trànsit."
+      },
+      {
+        id: 113,
+        block: 4,
+        blockName: "Bloc 4: Proxies",
+        isExam: false,
+        title: "Configuració Multidomini (VirtualHosts) a Apache2",
+        question: "Com es configuren a Apache2 dos dominis diferents (p.ex. 'remix.gax.org' i 'lucix.gax.org') que comparteixen la mateixa adreça IP (172.16.1.1) perquè cadascun mostri una pàgina web diferent?",
+        options: [
+          "Es donen d'alta tots dos noms amb la mateixa IP a /etc/hosts (o DNS), es creen dos directoris DocumentRoot diferents (/var/www/html/remix i /var/www/html/lucix), es creen dos fitxers a /etc/apache2/sites-available/ diferenciats per ServerName i DocumentRoot, s'activen amb 'a2ensite' i es reinicia Apache2.",
+          "No és possible allotjar dos dominis amb una sola IP si no s'instal·len dues targetes de xarxa físiques.",
+          "S'utilitza la directiva 'ProxyBlock' dins d'un únic fitxer default.conf.",
+          "S'executen dues instàncies d'Apache2 escoltant simultàniament al mateix port 80."
+        ],
+        answer: 0,
+        explanation: "Pàgina 14 del PDF de Proxies (apartat 'Multidomini'): VirtualHosts basats en nom amb diferent 'ServerName' i 'DocumentRoot' activats amb 'a2ensite'."
+      },
+      {
+        id: 114,
+        block: 4,
+        blockName: "Bloc 4: Proxies",
+        isExam: false,
+        title: "Autenticació Bàsica a Apache2 (.htpasswd)",
+        question: "En configurar autenticació bàsica gestionada per Apache2 per protegir el directori '/var/www/html/auth', amb quina ordre es crea el fitxer d'usuaris i quines directives s'inclouen dins del bloc <Directory>?",
+        options: [
+          "Es crea amb 'htpasswd -c /etc/apache2/.htpasswd adminp' i al bloc <Directory> s'inclou: AuthType Basic, AuthName, AuthUserFile /etc/apache2/.htpasswd i 'require valid-user' (o 'require user pere').",
+          "Es crea amb 'adduser adminp' i al bloc <Directory> es posa 'PAMAuthentication On'.",
+          "Es crea amb 'smbpasswd -a adminp' i la directiva 'ProxyRequests On'.",
+          "Es crea editant '/etc/shadow' manualment."
+        ],
+        answer: 0,
+        explanation: "Pàgines 14-15 del PDF de Proxies: En l'autenticació bàsica l'usuari és gestionat per Apache2 mitjançant 'htpasswd -c /etc/apache2/.htpasswd' i les directives AuthType Basic, AuthUserFile i require valid-user."
+      },
+      {
+        id: 115,
+        block: 4,
+        blockName: "Bloc 4: Proxies",
+        isExam: false,
+        title: "Autenticació PAM a Apache2 (Usuaris del SO)",
+        question: "Si volem que Apache2 validi l'accés a un directori restringit utilitzant directament els comptes d'usuari i contrasenyes del Sistema Operatiu Linux a través de PAM, quins paquets cal instal·lar i quines directives s'utilitzen?",
+        options: [
+          "Cal instal·lar 'libapache2-mod-authnz-pam' i 'pwauth', definir 'AddExternalAuth pwauth /usr/sbin/pwauth' i 'SetExternalAuthMethod pwauth pipe', i dins de <Directory> usar 'AuthBasicProvider external' i 'AuthExternal pwauth'.",
+          "Només cal apuntar 'AuthUserFile' cap al fitxer '/etc/shadow' amb permisos 777.",
+          "Cal instal·lar Squid i utilitzar 'acl pam_auth proxy_auth REQUIRED'.",
+          "Apache2 no permet autenticar usuaris del sistema operatiu per motius de seguretat."
+        ],
+        answer: 0,
+        explanation: "Pàgina 15 del PDF de Proxies: Autenticació amb PAM mitjançant 'libapache2-mod-authnz-pam' i 'pwauth' comunicat per 'pipe'."
+      },
+      {
+        id: 116,
+        block: 4,
+        blockName: "Bloc 4: Proxies",
+        isExam: false,
+        title: "Configuració d'HTTPS i Certificat Autosignat a Apache2",
+        question: "Per habilitar HTTPS amb un certificat autosignat a Apache2 segons els apunts, quin mòdul cal activar, quina ordre genera el certificat i quines directives s'activen a '/etc/apache2/sites-available/default-ssl.conf'?",
+        options: [
+          "S'activa el mòdul amb 'a2enmod ssl', es genera el certificat amb 'make-ssl-cert /usr/share/ssl-cert/ssleay.cnf /etc/ssl/private/gax.crt' i a '<VirtualHost _default_:443>' es defineix 'SSLEngine on' i 'SSLCertificateFile /etc/ssl/private/gax.crt'.",
+          "S'activa amb 'a2enmod https', es genera amb 'ssh-keygen -t ssl' i s'escolta al port 8080.",
+          "Es genera amb 'htpasswd -ssl' i no cal reiniciar Apache2.",
+          "Els certificats autosignats només funcionen si es demanen a Certbot amb IP pública."
+        ],
+        answer: 0,
+        explanation: "Pàgines 15-16 del PDF de Proxies: 'a2enmod ssl', generació amb 'make-ssl-cert' (indicant el domini ssl.gax.org i IP:172.16.1.1), configuració a 'default-ssl.conf' al port 443 amb 'SSLEngine on' i 'SSLCertificateFile'."
+      },
+      {
+        id: 117,
+        block: 4,
+        blockName: "Bloc 4: Proxies",
+        isExam: false,
+        title: "Configuració i Clients de WebDAV a Apache2",
+        question: "Què permet el protocol WebDAV a Apache2, quins mòduls requereix, quina directiva habilita DAV en un directori i amb quins clients es pot provar la pujada/escriptura de fitxers?",
+        options: [
+          "Permet pujar (escriure), moure i copiar continguts al servidor web; requereix 'a2enmod dav_fs dav dav_lock', la directiva 'DavLockDB' i 'DAV On' dins de <Directory>; i es prova amb el client CLI 'cadaver' o des del gestor d'arxius gràfic Nautilus/Files ('dav://dav.gax.org/webdav').",
+          "Permet executar contenidors Docker dins d'Apache; es prova amb 'squidclient'.",
+          "És un protocol d'encaminament dinàmic; requereix 'a2enmod proxy_balancer'.",
+          "Des d'un navegador web estàndard ja es poden pujar i esborrar carpetes directament sense necessitat de cap client WebDAV."
+        ],
+        answer: 0,
+        explanation: "Pàgines 16-17 del PDF de Proxies: WebDAV ('a2enmod dav_fs dav dav_lock', 'DavLockDB /var/www/dav/DavLock', 'Alias /webdav /var/www/dav', 'DAV On') permet escriure al servidor web i es prova amb 'cadaver' (CLI) o Nautilus/Files ('dav://')."
+      },
+      {
+        id: 118,
+        block: 4,
+        blockName: "Bloc 4: Proxies",
+        isExam: false,
+        title: "Directives de Memòria i Disc a Squid (cache_dir)",
+        question: "Al fitxer '/etc/squid/squid.conf', què signifiquen exactament els paràmetres de la línia 'cache_dir ufs /var/spool/squid 2048 16 256'?",
+        options: [
+          "Utilitza el format d'emmagatzematge 'ufs' al directori '/var/spool/squid', assignant 2048 MB (2 GB) d'espai màxim de disc, amb 16 subdirectoris de primer nivell i 256 subdirectoris de segon nivell.",
+          "Escolta al port 2048 amb 16 fils de CPU i 256 MB de RAM.",
+          "Permet un màxim de 2048 usuaris simultanis entre les 16:00 i les 256 hores.",
+          "Defineix que els fitxers individuals no poden superar els 16 MB ni els 256 KB."
+        ],
+        answer: 0,
+        explanation: "Pàgina 12 del PDF de Proxies: 'cache_dir ufs /var/spool/squid 2048 16 256' defineix el tipus (ufs), la ruta (/var/spool/squid), la mida en MB (2048 MB), directoris de nivell 1 (16) i de nivell 2 (256)."
+      },
+      {
+        id: 119,
+        block: 4,
+        blockName: "Bloc 4: Proxies",
+        isExam: false,
+        title: "ACLs i Regles http_access a Squid",
+        question: "Observa la següent configuració de control d'accés a Squid:\n\nacl xarxa_local src 192.168.1.0/24\nacl horari_laboral time MTWHF 09:00-18:00\nacl paraules_clau url_regex -i \"/etc/squid/paraules_prohibides\"\nhttp_access deny paraules_clau\nhttp_access allow xarxa_local horari_laboral\nhttp_access deny all\n\nQuè fa el modificador '-i' a url_regex, què significa la lletra 'H' a MTWHF i com funciona la línia 'http_access allow xarxa_local horari_laboral'?",
+        options: [
+          "'-i' ignora majúscules/minúscules (case-insensitive), 'H' correspon a dijous (Thursday), i posar dues ACLs a la mateixa línia d'http_access actua com un AND lògic (només permet l'accés si compleix xarxa_local I horari_laboral alhora).",
+          "'-i' inverteix la regla, 'H' significa Holiday (festius), i les dues ACLs actuen com un OR lògic.",
+          "'-i' filtra per adreça IP, 'H' significa mitja jornada, i aquesta configuració permet l'accés a tothom les 24 hores.",
+          "Com que al final hi ha 'http_access deny all', cap usuari podrà navegar mai."
+        ],
+        answer: 0,
+        explanation: "Pàgina 12 del PDF de Proxies: '-i' fa la cerca case-insensitive, MTWHF són els dies de dilluns a divendres en anglès (H = Thursday), i combinar ACLs en una mateixa regla 'http_access' exigeix que es compleixin totes dues condicions simultàniament."
+      },
+      {
+        id: 120,
+        block: 4,
+        blockName: "Bloc 4: Proxies",
+        isExam: false,
+        title: "Optimització de Caché a Squid (refresh_pattern)",
+        question: "A Squid, per a què serveix la directiva 'refresh_pattern -i \\.(gif|png|jpg|jpeg|ico)$ 10080 90% 43200 override-expire'?",
+        options: [
+          "Controla el temps que les imatges es consideren fresques a la caché (mínim 10080 minuts, 90% de l'edat, màxim 43200 minuts) i 'override-expire' força a mantenir-les a la caché durant el temps mínim encara que el servidor web enviï una capçalera Expires més curta.",
+          "Bloqueja la descàrrega de qualsevol imatge gif, png o jpg que superi els 10080 KB.",
+          "Esborra totes les imatges de la memòria cau cada 90 segons.",
+          "Redirigeix les imatges cap a un servidor Apache extern pel port 10080."
+        ],
+        answer: 0,
+        explanation: "Pàgina 13 del PDF de Proxies: 'refresh_pattern' ajusta l'algorisme de frescor d'objectes en caché segons l'extensió del fitxer (en minuts) i l'opció 'override-expire' ignora les capçaleres d'expiració prematura del servidor d'origen."
+      }
+    ];
+
+    // =========================================================================
+    // ESTAT DE L'APLICACIÓ I FUNCIONS
+    // =========================================================================
+    let currentQuestions = [];
+    let currentIndex = 0;
+    let userAnswers = {};
+    let flaggedQuestions = new Set();
+    let committedQuestions = new Set(); // Preguntes confirmades (avaluades i bloquejades)
+    let currentMode = 'practice';
+    let timerInterval = null;
+    let timerSeconds = 0;
+    let isFinished = false;
+    let currentFontSize = localStorage.getItem('gax_font_size') || 'normal';
+
+    window.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      initTheme();
+      applyFontSize();
+      updateSelectedBlocksCount();
+
+      document.querySelectorAll('#blockSelectors input[type="checkbox"]').forEach(cb => {
+        cb.addEventListener('change', updateSelectedBlocksCount);
+      });
+
+      // Tancar modal d'ajustos en clicar fora o amb Escape
+      const settingsModal = document.getElementById('settingsModal');
+      if (settingsModal) {
+        settingsModal.addEventListener('click', (e) => {
+          if (e.target.id === 'settingsModal') {
+            closeSettingsModal();
+          }
+        });
+      }
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          closeSettingsModal();
+        }
+      });
+    });
+
+    // ==========================================
+    // CONTROL DEL TEMA (FOSC / CLAR)
+    // ==========================================
+    function initTheme() {
+      const isDark = localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+        updateThemeIcon(true);
+      } else {
+        document.documentElement.classList.remove('dark');
+        updateThemeIcon(false);
+      }
+      updateSettingsThemeText(isDark);
+    }
+
+    function toggleTheme() {
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      updateThemeIcon(isDark);
+      updateSettingsThemeText(isDark);
+    }
+
+    function updateThemeIcon(isDark) {
+      const icon = document.getElementById('themeIcon');
+      if (icon) {
+        icon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+        lucide.createIcons();
+      }
+    }
+
+    function updateSettingsThemeText(isDark) {
+      const themeText = document.getElementById('settingsThemeText');
+      if (themeText) {
+        themeText.textContent = isDark ? 'Mode Fosc Actiu' : 'Mode Clar Actiu';
+      }
+    }
+
+    // ==========================================
+    // AJUSTOS: MIDA DE FONT I MODAL
+    // ==========================================
+    function setFontSize(size) {
+      currentFontSize = size;
+      localStorage.setItem('gax_font_size', size);
+      applyFontSize();
+    }
+
+    function applyFontSize() {
+      const qText = document.getElementById('qText');
+      const fontNormal = document.getElementById('fontBtnNormal');
+      const fontLarge = document.getElementById('fontBtnLarge');
+      const fontXLarge = document.getElementById('fontBtnXLarge');
+
+      const inactiveCls = "py-2 px-3 rounded-xl border text-xs font-semibold text-center transition-all border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800";
+      const activeCls = "py-2 px-3 rounded-xl border text-xs font-semibold text-center transition-all border-brand-600 bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-300";
+
+      if (fontNormal && fontLarge && fontXLarge) {
+        fontNormal.className = currentFontSize === 'normal' ? activeCls : inactiveCls;
+        fontLarge.className = currentFontSize === 'large' ? activeCls : inactiveCls;
+        fontXLarge.className = currentFontSize === 'xlarge' ? activeCls : inactiveCls;
+      }
+
+      if (qText) {
+        if (currentFontSize === 'large') {
+          qText.style.fontSize = '1.25rem';
+          qText.style.lineHeight = '1.75rem';
+        } else if (currentFontSize === 'xlarge') {
+          qText.style.fontSize = '1.4rem';
+          qText.style.lineHeight = '2rem';
+        } else {
+          qText.style.fontSize = '';
+          qText.style.lineHeight = '';
+        }
+      }
+    }
+
+    function openSettingsModal() {
+      const modal = document.getElementById('settingsModal');
+      if (!modal) return;
+      document.getElementById('settingsOptPenalize').checked = document.getElementById('optPenalize').checked;
+      document.getElementById('settingsOptShuffle').checked = document.getElementById('optShuffle').checked;
+      applyFontSize();
+      updateSettingsThemeText(document.documentElement.classList.contains('dark'));
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      lucide.createIcons();
+    }
+
+    function closeSettingsModal() {
+      const modal = document.getElementById('settingsModal');
+      if (!modal) return;
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function syncSettingsCheckboxes(source) {
+      if (source === 'penalize') {
+        const val = document.getElementById('settingsOptPenalize').checked;
+        document.getElementById('optPenalize').checked = val;
+      } else if (source === 'shuffle') {
+        const val = document.getElementById('settingsOptShuffle').checked;
+        document.getElementById('optShuffle').checked = val;
+      }
+    }
+
+    function confirmGoToConfigFromModal() {
+      closeSettingsModal();
+      goToConfig();
+    }
+
+    // ==========================================
+    // CONFIGURACIÓ DE BLOCS I FILTRES
+    // ==========================================
+    function toggleAllBlocks(select) {
+      document.querySelectorAll('#blockSelectors input[type="checkbox"]').forEach(cb => cb.checked = select);
+      updateSelectedBlocksCount();
+    }
+
+    function getFilteredPool() {
+      const selectedBlocks = getSelectedBlockNumbers();
+      const filterType = document.getElementById('questionFilterType').value;
+
+      let pool = MASTER_QUESTIONS.filter(q => selectedBlocks.includes(q.block));
+      if (filterType === 'examOnly') {
+        pool = pool.filter(q => q.isExam);
+      } else if (filterType === 'newOnly') {
+        pool = pool.filter(q => !q.isExam);
+      }
+      return pool;
+    }
+
+    function updateSelectedBlocksCount() {
+      const pool = getFilteredPool();
+      const limitVal = document.getElementById('questionLimitSelect').value;
+      const finalCount = limitVal === 'all' ? pool.length : Math.min(pool.length, parseInt(limitVal, 10));
+
+      const btn = document.getElementById('startBtnText');
+      if (pool.length === 0) {
+        btn.textContent = "Selecciona almenys 1 bloc vàlid";
+      } else {
+        btn.textContent = `Començar Test (${finalCount} Preguntes)`;
+      }
+    }
+
+    function getSelectedBlockNumbers() {
+      const res = [];
+      if (document.getElementById('block1').checked) res.push(1);
+      if (document.getElementById('block2').checked) res.push(2);
+      if (document.getElementById('block3').checked) res.push(3);
+      if (document.getElementById('block4').checked) res.push(4);
+      return res;
+    }
+
+    function updateModeUI() {
+      const mode = document.querySelector('input[name="examMode"]:checked').value;
+      const cardPractice = document.getElementById('modeCardPractice');
+      const cardExam = document.getElementById('modeCardExam');
+
+      if (mode === 'practice') {
+        cardPractice.className = "relative flex p-4 rounded-xl border-2 border-brand-500 bg-brand-50/40 dark:bg-brand-950/20 cursor-pointer transition-all";
+        cardExam.className = "relative flex p-4 rounded-xl border border-slate-200 dark:border-slate-700/80 cursor-pointer transition-all";
+      } else {
+        cardExam.className = "relative flex p-4 rounded-xl border-2 border-brand-500 bg-brand-50/40 dark:bg-brand-950/20 cursor-pointer transition-all";
+        cardPractice.className = "relative flex p-4 rounded-xl border border-slate-200 dark:border-slate-700/80 cursor-pointer transition-all";
+      }
+    }
+
+    // ==========================================
+    // INICI DEL TEST / MOTOR DE JOC
+    // ==========================================
+    function startQuiz(customSubset = null) {
+      let pool = customSubset ? [...customSubset] : getFilteredPool();
+      if (pool.length === 0) {
+        alert("Si us plau, selecciona com a mínim un bloc temàtic amb preguntes disponibles.");
+        return;
+      }
+
+      currentMode = document.querySelector('input[name="examMode"]:checked').value;
+      const doShuffle = document.getElementById('optShuffle').checked;
+      const limitVal = document.getElementById('questionLimitSelect').value;
+
+      if (doShuffle) {
+        pool = shuffleArray(pool);
+      }
+
+      if (!customSubset && limitVal !== 'all') {
+        const maxQ = parseInt(limitVal, 10);
+        pool = pool.slice(0, maxQ);
+      }
+
+      if (doShuffle) {
+        pool = pool.map(q => {
+          const originalOptions = q.options.map((opt, i) => ({ text: opt, isCorrect: i === q.answer }));
+          // No barregem si és simplement Verdader / Fals per mantenir l'ordre clàssic
+          if (q.options.length === 2 && q.options[0] === "Verdader" && q.options[1] === "Fals") {
+            return { ...q };
+          }
+          const shuffledOpts = shuffleArray(originalOptions);
+          const newAnswerIndex = shuffledOpts.findIndex(o => o.isCorrect);
+          return {
+            ...q,
+            options: shuffledOpts.map(o => o.text),
+            answer: newAnswerIndex
+          };
+        });
+      }
+
+      currentQuestions = pool;
+      currentIndex = 0;
+      userAnswers = {};
+      flaggedQuestions.clear();
+      committedQuestions.clear();
+      isFinished = false;
+
+      document.getElementById('viewConfig').classList.add('hidden');
+      document.getElementById('viewResults').classList.add('hidden');
+      document.getElementById('viewCatalog').classList.add('hidden');
+      document.getElementById('viewQuiz').classList.remove('hidden');
+
+      const timerContainer = document.getElementById('timerContainer');
+      clearInterval(timerInterval);
+      timerSeconds = 0;
+      if (currentMode === 'exam') {
+        timerContainer.classList.remove('hidden');
+        timerContainer.classList.add('flex');
+        updateTimerDisplay();
+        timerInterval = setInterval(() => {
+          timerSeconds++;
+          updateTimerDisplay();
+        }, 1000);
+      } else {
+        timerContainer.classList.add('hidden');
+        timerContainer.classList.remove('flex');
+      }
+
+      loadQuestion(0);
+      renderGridNavigation();
+      updateStats();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function shuffleArray(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function updateTimerDisplay() {
+      const mins = Math.floor(timerSeconds / 60).toString().padStart(2, '0');
+      const secs = (timerSeconds % 60).toString().padStart(2, '0');
+      document.getElementById('timerDisplay').textContent = `${mins}:${secs}`;
+    }
+
+    function goToConfig() {
+      if (!isFinished && !document.getElementById('viewQuiz').classList.contains('hidden') && Object.keys(userAnswers).length > 0) {
+        if (!confirm("Vols sortir de la sessió actual? Es perdrà el progrés del test en curs.")) {
+          return;
+        }
+      }
+      clearInterval(timerInterval);
+      document.getElementById('viewQuiz').classList.add('hidden');
+      document.getElementById('viewResults').classList.add('hidden');
+      document.getElementById('viewCatalog').classList.add('hidden');
+      document.getElementById('viewConfig').classList.remove('hidden');
+      document.getElementById('timerContainer').classList.add('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ==========================================
+    // RENDERITZACIÓ DE PREGUNTES
+    // ==========================================
+    function loadQuestion(index) {
+      if (index < 0 || index >= currentQuestions.length) return;
+      currentIndex = index;
+      const q = currentQuestions[currentIndex];
+
+      document.getElementById('qBadgeBlock').textContent = q.blockName;
+      const sourceBadge = document.getElementById('qBadgeSource');
+      if (sourceBadge) {
+        if (q.isExam) {
+          sourceBadge.textContent = "⭐ Examen Oficial";
+          sourceBadge.className = "px-2.5 py-1 rounded-md bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 border border-amber-300/60 dark:border-amber-800/60 font-semibold";
+        } else {
+          sourceBadge.textContent = "📘 Temari Complet";
+          sourceBadge.className = "px-2.5 py-1 rounded-md bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-800/50 font-semibold";
+        }
+      }
+
+      document.getElementById('qIndexText').textContent = `Pregunta ${currentIndex + 1} de ${currentQuestions.length} (#${q.id})`;
+      const qTitleEl = document.getElementById('qTitle');
+      if (qTitleEl) qTitleEl.textContent = q.title || '';
+      
+      updateFlagButtonUI();
+
+      const qTextEl = document.getElementById('qText');
+      if (q.question.includes('\n\n')) {
+        const parts = q.question.split('\n\n');
+        qTextEl.innerHTML = `<div>${escapeHtml(parts[0]).replace(/\n/g, '<br>')}</div><pre class="code-block">${escapeHtml(parts[1])}</pre><div>${escapeHtml(parts.slice(2).join('\n\n')).replace(/\n/g, '<br>')}</div>`;
+      } else {
+        qTextEl.innerHTML = escapeHtml(q.question).replace(/\n/g, '<br>');
+      }
+      applyFontSize();
+
+      // Estat de resposta i bloqueig
+      const hasAnswered = userAnswers[q.id] !== undefined;
+      const selectedIndex = userAnswers[q.id];
+      const isCommitted = currentMode === 'practice' ? hasAnswered : committedQuestions.has(q.id);
+
+      // Badge de bloqueig / confirmada
+      const lockedBadge = document.getElementById('qLockedBadge');
+      if (lockedBadge) {
+        if (isCommitted) {
+          lockedBadge.classList.remove('hidden');
+          lockedBadge.classList.add('flex');
+        } else {
+          lockedBadge.classList.add('hidden');
+          lockedBadge.classList.remove('flex');
+        }
+      }
+
+      // Llista d'opcions
+      const optionsContainer = document.getElementById('qOptionsList');
+      optionsContainer.innerHTML = '';
+
+      q.options.forEach((optText, optIdx) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = getOptionButtonClass(q, optIdx, hasAnswered, selectedIndex, isCommitted);
+        if (!isCommitted) {
+          btn.onclick = () => selectOption(optIdx);
+        } else {
+          btn.onclick = null;
+        }
+
+        const letter = String.fromCharCode(65 + optIdx);
+        btn.innerHTML = `
+          <div class="flex items-center gap-3 w-full text-left">
+            <span class="w-7 h-7 rounded-lg flex items-center justify-center font-mono font-bold text-xs shrink-0 border transition-colors ${getOptionBadgeClass(q, optIdx, hasAnswered, selectedIndex, isCommitted)}">
+              ${letter}
+            </span>
+            <span class="flex-1 text-sm sm:text-base leading-snug">${escapeHtml(optText)}</span>
+          </div>
+        `;
+        optionsContainer.appendChild(btn);
+      });
+
+      // Caixa d'Explicació / Feedback Immediat
+      const feedbackBox = document.getElementById('feedbackBox');
+      if (isCommitted && hasAnswered) {
+        renderFeedbackBox(q, selectedIndex);
+        feedbackBox.classList.remove('hidden');
+      } else {
+        feedbackBox.classList.add('hidden');
+      }
+
+      // Controls inferiors
+      document.getElementById('prevBtn').disabled = currentIndex === 0;
+      document.getElementById('prevBtn').classList.toggle('opacity-50', currentIndex === 0);
+
+      const isLast = currentIndex === currentQuestions.length - 1;
+      const nextBtn = document.getElementById('nextBtn');
+      const finishBtn = document.getElementById('finishBtn');
+      const confirmBtn = document.getElementById('confirmBtn');
+
+      if (isLast) {
+        nextBtn.classList.add('hidden');
+        finishBtn.classList.remove('hidden');
+        if (currentMode === 'exam' && !isCommitted && hasAnswered) {
+          confirmBtn.classList.remove('hidden');
+        } else {
+          confirmBtn.classList.add('hidden');
+        }
+      } else {
+        nextBtn.classList.remove('hidden');
+        finishBtn.classList.add('hidden');
+        confirmBtn.classList.add('hidden');
+      }
+
+      renderGridNavigation();
+      updateStats();
+      lucide.createIcons();
+    }
+
+    function getOptionButtonClass(q, optIdx, hasAnswered, selectedIndex, isCommitted) {
+      const base = "w-full p-4 rounded-xl border text-left transition-all duration-150 flex items-center justify-between ";
+      
+      // Si la pregunta ja està confirmada / bloquejada (mode pràctica o examen passada)
+      if (isCommitted) {
+        if (optIdx === q.answer) {
+          return base + "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200 font-semibold shadow-sm ring-1 ring-emerald-500/30 cursor-default";
+        }
+        if (optIdx === selectedIndex && selectedIndex !== q.answer) {
+          return base + "border-rose-500 bg-rose-50 dark:bg-rose-950/40 text-rose-900 dark:text-rose-200 shadow-sm ring-1 ring-rose-500/30 cursor-default";
+        }
+        return base + "border-slate-200 dark:border-slate-800 opacity-60 bg-transparent text-slate-500 dark:text-slate-400 cursor-default";
+      }
+
+      // Si encara no ha respost cap opció
+      if (!hasAnswered) {
+        return base + "border-slate-200 dark:border-slate-800 hover:border-brand-500 hover:bg-slate-50 dark:hover:bg-slate-800/60 cursor-pointer";
+      }
+
+      // En procés de tria (mode examen abans de passar a la següent pregunta)
+      if (optIdx === selectedIndex) {
+        return base + "border-brand-600 bg-brand-50 dark:bg-brand-950/40 text-brand-900 dark:text-brand-200 font-semibold ring-2 ring-brand-500/30 cursor-pointer shadow-sm";
+      }
+      return base + "border-slate-200 dark:border-slate-800 hover:border-brand-500 hover:bg-slate-50 dark:hover:bg-slate-800/60 opacity-80 cursor-pointer";
+    }
+
+    function getOptionBadgeClass(q, optIdx, hasAnswered, selectedIndex, isCommitted) {
+      if (isCommitted) {
+        if (optIdx === q.answer) {
+          return "border-emerald-600 bg-emerald-600 text-white";
+        }
+        if (optIdx === selectedIndex && selectedIndex !== q.answer) {
+          return "border-rose-600 bg-rose-600 text-white";
+        }
+        return "border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-400";
+      }
+
+      if (!hasAnswered) {
+        return "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300";
+      }
+
+      if (optIdx === selectedIndex) {
+        return "border-brand-600 bg-brand-600 text-white";
+      }
+      return "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-500";
+    }
+
+    function selectOption(optIndex) {
+      const q = currentQuestions[currentIndex];
+      const isCommitted = currentMode === 'practice' ? (userAnswers[q.id] !== undefined) : committedQuestions.has(q.id);
+      if (isCommitted) return;
+
+      userAnswers[q.id] = optIndex;
+      loadQuestion(currentIndex);
+    }
+
+    function confirmCurrentQuestion() {
+      const q = currentQuestions[currentIndex];
+      if (userAnswers[q.id] === undefined) return;
+      committedQuestions.add(q.id);
+      loadQuestion(currentIndex);
+    }
+
+    function renderFeedbackBox(q, selectedIndex) {
+      const feedbackBox = document.getElementById('feedbackBox');
+      const isCorrect = selectedIndex === q.answer;
+      const title = document.getElementById('feedbackTitle');
+      const body = document.getElementById('feedbackBody');
+      const icon = document.getElementById('feedbackIcon');
+
+      if (isCorrect) {
+        feedbackBox.className = "mt-6 p-4 rounded-xl border border-emerald-200 dark:border-emerald-900/60 bg-emerald-50/80 dark:bg-emerald-950/30 text-emerald-900 dark:text-emerald-200 animate-fadeIn";
+        icon.innerHTML = `<i data-lucide="check-circle" class="w-5 h-5 text-emerald-600 dark:text-emerald-400"></i>`;
+        title.textContent = "Resposta Correcta! Excel·lent deducció.";
+      } else {
+        feedbackBox.className = "mt-6 p-4 rounded-xl border border-rose-200 dark:border-rose-900/60 bg-rose-50/80 dark:bg-rose-950/30 text-rose-900 dark:text-rose-200 animate-fadeIn";
+        icon.innerHTML = `<i data-lucide="x-circle" class="w-5 h-5 text-rose-600 dark:text-rose-400"></i>`;
+        title.textContent = "Resposta Incorrecta.";
+      }
+
+      body.innerHTML = `<strong>Justificació tècnica de l'examen:</strong> ${escapeHtml(q.explanation)}`;
+      lucide.createIcons();
+    }
+
+    // ==========================================
+    // NAVEGACIÓ I REIXA LATERAL
+    // ==========================================
+    function nextQuestion() {
+      const q = currentQuestions[currentIndex];
+      if (currentMode === 'exam' && userAnswers[q.id] !== undefined) {
+        committedQuestions.add(q.id);
+      }
+      if (currentIndex < currentQuestions.length - 1) {
+        loadQuestion(currentIndex + 1);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    function prevQuestion() {
+      if (currentIndex > 0) {
+        loadQuestion(currentIndex - 1);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    function toggleFlagCurrentQuestion() {
+      const q = currentQuestions[currentIndex];
+      if (flaggedQuestions.has(q.id)) {
+        flaggedQuestions.delete(q.id);
+      } else {
+        flaggedQuestions.add(q.id);
+      }
+      updateFlagButtonUI();
+      renderGridNavigation();
+    }
+
+    function updateFlagButtonUI() {
+      const q = currentQuestions[currentIndex];
+      const isFlagged = flaggedQuestions.has(q.id);
+      const btn = document.getElementById('flagBtn');
+      const text = document.getElementById('flagText');
+      const icon = document.getElementById('flagIcon');
+
+      if (isFlagged) {
+        btn.className = "flex items-center gap-1.5 px-3 py-1 rounded-lg border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 font-semibold transition-colors";
+        text.textContent = "Marcada";
+        icon.setAttribute('data-lucide', 'bookmark-check');
+      } else {
+        btn.className = "flex items-center gap-1.5 px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors";
+        text.textContent = "Marcar per revisar";
+        icon.setAttribute('data-lucide', 'bookmark');
+      }
+      lucide.createIcons();
+    }
+
+    function renderGridNavigation() {
+      const grid = document.getElementById('questionGrid');
+      grid.innerHTML = '';
+      const filter = document.getElementById('gridFilterSelect').value;
+
+      currentQuestions.forEach((q, idx) => {
+        const hasAnswered = userAnswers[q.id] !== undefined;
+        const isCommitted = currentMode === 'practice' ? hasAnswered : committedQuestions.has(q.id);
+        const isCorrect = userAnswers[q.id] === q.answer;
+        const isFlagged = flaggedQuestions.has(q.id);
+
+        if (filter === 'flagged' && !isFlagged) return;
+        if (filter === 'unanswered' && isCommitted) return;
+        if (filter === 'wrong' && (!isCommitted || isCorrect)) return;
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = idx + 1;
+        btn.title = `Pregunta ${idx + 1}: ${q.title}`;
+        btn.onclick = () => {
+          loadQuestion(idx);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        let cls = "h-8 rounded-lg text-xs font-mono font-bold transition-all relative flex items-center justify-center border ";
+        if (idx === currentIndex) {
+          cls += "ring-2 ring-brand-500 ring-offset-1 dark:ring-offset-slate-900 ";
+        }
+        if (isFlagged) {
+          cls += "after:content-[''] after:w-2 after:h-2 after:bg-amber-500 after:rounded-full after:absolute after:top-0.5 after:right-0.5 ";
+        }
+        if (!hasAnswered) {
+          cls += "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-brand-400";
+        } else if (!isCommitted) {
+          cls += "border-brand-500 bg-brand-50 dark:bg-brand-950/60 text-brand-700 dark:text-brand-300 font-semibold";
+        } else {
+          cls += isCorrect
+            ? "border-emerald-600 bg-emerald-600 text-white"
+            : "border-rose-600 bg-rose-600 text-white";
+        }
+
+        btn.className = cls;
+        grid.appendChild(btn);
+      });
+    }
+
+    function updateStats() {
+      const total = currentQuestions.length;
+      let correct = 0;
+      let wrong = 0;
+      let answeredCount = 0;
+
+      if (currentMode === 'exam') {
+        committedQuestions.forEach(qid => {
+          const q = currentQuestions.find(item => item.id == qid);
+          if (q && userAnswers[qid] !== undefined) {
+            if (userAnswers[qid] === q.answer) correct++;
+            else wrong++;
+          }
+        });
+        answeredCount = committedQuestions.size;
+      } else {
+        answeredCount = Object.keys(userAnswers).length;
+        Object.entries(userAnswers).forEach(([qid, selOpt]) => {
+          const q = currentQuestions.find(item => item.id == qid);
+          if (q) {
+            if (selOpt === q.answer) correct++;
+            else wrong++;
+          }
+        });
+      }
+
+      const percent = total > 0 ? Math.round((answeredCount / total) * 100) : 0;
+      document.getElementById('progressBar').style.width = `${percent}%`;
+      document.getElementById('statProgressPercent').textContent = `${percent}%`;
+      document.getElementById('statAnsweredCount').textContent = `${answeredCount}/${total}`;
+      document.getElementById('statCorrectCount').textContent = correct;
+      document.getElementById('statWrongCount').textContent = wrong;
+    }
+
+    function confirmFinishExam() {
+      const answered = Object.keys(userAnswers).length;
+      const total = currentQuestions.length;
+      if (answered < total) {
+        if (!confirm(`Encara tens ${total - answered} preguntes sense respondre. Vols finalitzar i obtenir la nota ara?`)) {
+          return;
+        }
+      }
+      finishExam();
+    }
+
+    function finishExam() {
+      const currentQ = currentQuestions[currentIndex];
+      if (currentQ && userAnswers[currentQ.id] !== undefined) {
+        committedQuestions.add(currentQ.id);
+      }
+
+      isFinished = true;
+      clearInterval(timerInterval);
+
+      const total = currentQuestions.length;
+      let correct = 0;
+      let wrong = 0;
+
+      const blockStats = {
+        1: { total: 0, correct: 0, wrong: 0, name: "Bloc 1: Tema 1A (GNU/Linux, Systemd & FS)" },
+        2: { total: 0, correct: 0, wrong: 0, name: "Bloc 2: Temes 1B & 1C (Xarxes, NAT & Storage)" },
+        3: { total: 0, correct: 0, wrong: 0, name: "Bloc 3: Tema 1D (Virtualització, Docker & LXD)" },
+        4: { total: 0, correct: 0, wrong: 0, name: "Bloc 4: Proxies (SOCKS, Apache2 & Squid)" }
+      };
+
+      currentQuestions.forEach(q => {
+        if (blockStats[q.block]) {
+          blockStats[q.block].total++;
+        }
+        const userChoice = userAnswers[q.id];
+        if (userChoice !== undefined) {
+          if (userChoice === q.answer) {
+            correct++;
+            if (blockStats[q.block]) blockStats[q.block].correct++;
+          } else {
+            wrong++;
+            if (blockStats[q.block]) blockStats[q.block].wrong++;
+          }
+        }
+      });
+
+      const unanswered = total - (correct + wrong);
+      const penalize = document.getElementById('optPenalize').checked;
+
+      let finalPoints = correct;
+      if (penalize) {
+        finalPoints = Math.max(0, correct - (wrong * 0.20));
+      }
+      const scoreOver10 = total > 0 ? ((finalPoints / total) * 10).toFixed(2) : "0.00";
+
+      document.getElementById('finalScoreTitle').innerHTML = `${scoreOver10} <span class="text-2xl font-medium text-slate-400">/ 10</span>`;
+      
+      const mins = Math.floor(timerSeconds / 60);
+      const secs = timerSeconds % 60;
+      const timeStr = `${mins}m ${secs}s`;
+      
+      document.getElementById('finalScoreSubtitle').textContent = 
+        `Has respost ${correct + wrong} de ${total} preguntes${penalize ? ' (aplicant penalització de -0.20 per error)' : ''}.`;
+      
+      document.getElementById('resTotalCorrect').textContent = correct;
+      document.getElementById('resTotalWrong').textContent = wrong;
+      document.getElementById('resTotalUnanswered').textContent = unanswered;
+      document.getElementById('resTotalTime').textContent = currentMode === 'exam' ? timeStr : 'Mode Estudi';
+      document.getElementById('wrongCountBadge').textContent = wrong;
+
+      const retryBtn = document.getElementById('retryWrongBtn');
+      if (wrong === 0) {
+        retryBtn.classList.add('hidden');
+      } else {
+        retryBtn.classList.remove('hidden');
+      }
+
+      const breakdownEl = document.getElementById('resultsBlockBreakdown');
+      breakdownEl.innerHTML = '';
+
+      Object.entries(blockStats).forEach(([blkNum, data]) => {
+        if (data.total === 0) return;
+        const pct = Math.round((data.correct / data.total) * 100);
+        const div = document.createElement('div');
+        div.className = "space-y-1.5";
+        div.innerHTML = `
+          <div class="flex justify-between text-xs font-semibold">
+            <span class="text-slate-700 dark:text-slate-300">${data.name}</span>
+            <span class="font-mono ${pct >= 50 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400' }">${data.correct}/${data.total} (${pct}%)</span>
+          </div>
+          <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+            <div class="${pct >= 70 ? 'bg-emerald-500' : pct >= 50 ? 'bg-amber-500' : 'bg-rose-500'} h-full rounded-full" style="width: ${pct}%"></div>
+          </div>
+        `;
+        breakdownEl.appendChild(div);
+      });
+
+      document.getElementById('viewQuiz').classList.add('hidden');
+      document.getElementById('viewResults').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      if (parseFloat(scoreOver10) >= 6.0 && typeof confetti === 'function') {
+        confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 } });
+      }
+    }
+
+    function retryOnlyWrongQuestions() {
+      const wrongList = currentQuestions.filter(q => userAnswers[q.id] !== undefined && userAnswers[q.id] !== q.answer);
+      if (wrongList.length === 0) return;
+      startQuiz(wrongList);
+    }
+
+    // =========================================================================
+    // MODE CATÀLEG / LECTURA DE TOTES LES 120 PREGUNTES
+    // =========================================================================
+    function openCatalogView() {
+      clearInterval(timerInterval);
+      document.getElementById('viewConfig').classList.add('hidden');
+      document.getElementById('viewQuiz').classList.add('hidden');
+      document.getElementById('viewResults').classList.add('hidden');
+      document.getElementById('viewCatalog').classList.remove('hidden');
+      renderCatalogList();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function renderCatalogList() {
+      const query = (document.getElementById('catalogSearch').value || '').toLowerCase().trim();
+      const filter = document.getElementById('catalogBlockFilter').value;
+      const container = document.getElementById('catalogContainer');
+      container.innerHTML = '';
+
+      const filtered = MASTER_QUESTIONS.filter(q => {
+        if (filter === 'exam' && !q.isExam) return false;
+        if (['1', '2', '3', '4'].includes(filter) && q.block !== parseInt(filter, 10)) return false;
+        if (query) {
+          const haystack = `${q.title} ${q.question} ${q.options.join(' ')} ${q.explanation}`.toLowerCase();
+          return haystack.includes(query);
+        }
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="p-8 text-center text-slate-500 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">No s'han trobat preguntes amb aquest filtre.</div>`;
+        return;
+      }
+
+      filtered.forEach(q => {
+        const card = document.createElement('div');
+        card.className = "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm space-y-3";
+
+        const optsHtml = q.options.map((opt, idx) => {
+          const isCorr = idx === q.answer;
+          const letter = String.fromCharCode(65 + idx);
+          return `
+            <div class="p-3 rounded-xl border text-xs sm:text-sm flex items-start gap-2.5 ${isCorr ? 'border-emerald-500 bg-emerald-50/70 dark:bg-emerald-950/30 text-emerald-900 dark:text-emerald-200 font-semibold' : 'border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-400'}">
+              <span class="font-mono font-bold">${letter})</span>
+              <span class="flex-1">${escapeHtml(opt)}</span>
+              ${isCorr ? '<span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 shrink-0">✔ Correcta</span>' : ''}
+            </div>
+          `;
+        }).join('');
+
+        card.innerHTML = `
+          <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+            <div class="flex items-center gap-2">
+              <span class="font-mono font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">#${q.id}</span>
+              <span class="px-2.5 py-0.5 rounded bg-brand-50 dark:bg-brand-950/60 text-brand-700 dark:text-brand-300 font-semibold">${q.blockName}</span>
+              ${q.isExam ? '<span class="px-2.5 py-0.5 rounded bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 font-semibold">⭐ Examen Oficial</span>' : ''}
+            </div>
+            <span class="text-slate-400 font-medium">${escapeHtml(q.title)}</span>
+          </div>
+          <div class="text-sm sm:text-base font-semibold text-slate-900 dark:text-white leading-relaxed">${escapeHtml(q.question).replace(/\n/g, '<br>')}</div>
+          <div class="grid grid-cols-1 gap-2 pt-1">${optsHtml}</div>
+          <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
+            <strong class="text-brand-600 dark:text-brand-400">Justificació:</strong> ${escapeHtml(q.explanation)}
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function escapeHtml(string) {
+      if (!string) return '';
+      return String(string)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+  </script>
+</body>
+</html>
